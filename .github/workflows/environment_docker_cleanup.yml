@@ -1,4 +1,4 @@
-name: cleanup docker images and containers
+name: Cleanup Docker Images and Containers
 
 on:
   workflow_dispatch:

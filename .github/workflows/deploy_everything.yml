@@ -27,5 +27,7 @@ jobs:
     needs: validate-app
     uses:  ./.github/workflows/app_run.yml
 
-  #notify-on-fail:
-  #  uses: ./.github/workflows/notifications/discord.yml
+  notify-if-any-step-fails:
+    needs: [prepare-environment, validate-app, run-app]
+    if: failure()
+    uses: ./.github/workflows/notification_discord.yml
