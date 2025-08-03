@@ -9,7 +9,6 @@ jobs:
     steps:
       - name: Start WordPress Containers
         run: |
-          echo "for detailed wiev run command 'docker compose --env-file .env -f webapp/docker-compose.yml up -d --build'" 
           docker compose --env-file .env -f webapp/docker-compose.yml up -d
   setup-configurations:
     needs: start-containers
