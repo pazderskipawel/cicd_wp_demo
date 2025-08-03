@@ -19,6 +19,7 @@ services:
      - ./wordpress-config/:/var/www/wordpress-config
     networks:
       - wp-net
+    restart: on_failure[:3]
 
   db:
     image: mysql:8.0
@@ -48,6 +49,7 @@ services:
       - ./nginx-config/:/etc/nginx/nginx-config
     networks:
       - wp-net
+    restart: on_failure[:3]
 
 volumes:
   db_data:
