@@ -15,22 +15,22 @@ This repository sets up Docker containers for WordPress and MySQL using `docker-
 - repo uses "nested" workflows so everything should be clear and reusable if needed
 - summary of main workflow:
   #### 1. prepare environment
-    1. check out current environment 
-          1. checkout code, 
-          2. install docker and docker compose if its not installed 
-    2. clean up current docker resources related to project
-    3. prepare environment for app 
-          1. creates `.env` file
-          2. creates directories that will be mounted to images 
-          3. creates https certificates using mkcert
+  1. check out current environment 
+      1. checkout code, 
+      2. install docker and docker compose if its not installed 
+  2. clean up current docker resources related to project
+  3. prepare environment for app 
+      1. creates `.env` file
+      2. creates directories that will be mounted to images 
+      3. creates https certificates using mkcert
   #### 2. validate app
-    1. performs dry run for docker compose 
+  1. performs dry run for docker compose 
   #### 3. run app 
-    1. start containers
-    2. copy configurations to containers
-    3. completes setting up of wordpress container 
-        1. installs wp-cli 
-        2. completes wordpress installation
+  1. start containers
+  2. copy configurations to containers
+  3. completes setting up of wordpress container 
+      1. installs wp-cli 
+      2. completes wordpress installation
 ## Secrets & Variables
 - repo uses github action variables and secrets, so no sensitive data shuold be leaked 
 ## Maintenance & Cleanup
