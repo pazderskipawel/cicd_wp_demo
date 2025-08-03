@@ -29,7 +29,7 @@ jobs:
 
   notify-if-any-step-fails:
     needs: [prepare-environment, validate-app, run-app]
-    if: failure() || cancelled()
+    if: failure()
     uses: ./.github/workflows/notification_discord.yml
     secrets:
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
