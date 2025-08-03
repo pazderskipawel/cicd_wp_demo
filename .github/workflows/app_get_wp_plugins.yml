@@ -5,8 +5,7 @@ on:
 
 jobs:
   list_plugins:
-    if: github.actor == github.repository_owner
     runs-on: [self-hosted]
     steps:
       - run: | 
-          docker exec wordpress /bin/bash -c "cd /var/www/html/ && wp plugin list"
+          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/getplugins.sh"
