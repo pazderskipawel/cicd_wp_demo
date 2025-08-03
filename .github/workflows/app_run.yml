@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Start WordPress Containers
         uses: nick-fields/retry@v3
+        #https://github.com/marketplace/actions/retry-step
         with:
           timeout_minutes: 10
           max_attempts: 3
