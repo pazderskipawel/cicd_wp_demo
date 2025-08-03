@@ -8,8 +8,11 @@ jobs:
     runs-on: [self-hosted]
     steps:
       - name: Start WordPress Containers
-        run: |
-          docker compose --env-file .env -f webapp/docker-compose.yml up -d
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_on: error
+          command: docker compose --env-file .env -f webapp/docker-compose.yml up -d
   setup-configurations:
     needs: start-containers
     runs-on: [self-hosted]
