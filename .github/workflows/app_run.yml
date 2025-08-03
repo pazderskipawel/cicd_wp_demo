@@ -11,11 +11,11 @@ jobs:
         run: |
           echo "for detailed wiev run command 'docker compose --env-file .env -f webapp/docker-compose.yml up -d --build'" 
           docker compose --env-file .env -f webapp/docker-compose.yml up -d
-  copy-configurations:
+  setup-configurations:
     needs: start-containers
     runs-on: [self-hosted]
     steps:
-      - name: Copy Nginx configuration files to container to enable https
+      - name: Move Nginx configuration files to proper directory after container started
         # This step is necessary to the server to handle HTTPS using mkcert.
         run: |
           docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
@@ -23,19 +23,6 @@ jobs:
       - name: Copy wordpress configuration files to container
         run: |
           docker exec wordpress /bin/bash -c "chmod +x /var/www/wordpress-config/*.sh"
-  setup-wordpress:
-    needs: copy-configurations
-    runs-on: [self-hosted]
-    steps:
-      - name: Add user for wordpress CLI
-        run: |
-          docker exec wordpress /bin/bash -c "adduser --disabled-password --gecos '' deployuser"
-      - name: Install WP-CLI
-        run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/installwpcli.sh"
-      - name: Configure WordPress
-        run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/configurewp.sh"
-      - name: set up site url and home url
-        run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/setupurls.sh"
+  configure-wordpress:
+    needs: setup-configurations
+    uses: ./.github/workflows/app_configure_wordpress.yml

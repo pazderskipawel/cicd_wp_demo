@@ -1,0 +1,29 @@
+name: WordPress Configuration
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  add-user:
+    runs-on: [self-hosted]
+    steps:
+      - name: Add user for wordpress CLI
+        run: |
+          docker exec wordpress /bin/bash -c "adduser --disabled-password --gecos '' deployuser"
+  install-wp-cli:
+    needs: add-user
+    runs-on: [self-hosted]
+    steps:
+      - name: Install WP-CLI
+        run: |
+          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/installwpcli.sh"
+  configure-wordpress:
+    needs: install-wp-cli
+    runs-on: [self-hosted]
+    steps:
+      - name: Configure WordPress
+        run: |
+          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/configurewp.sh"
+      - name: Set up urls
+        run: |
+          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/setupurls.sh"
