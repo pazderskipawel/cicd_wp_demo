@@ -43,8 +43,6 @@ services:
     ports:
       - "443:443"
     volumes:
-    # default.conf mount moved to cicd.yml
-    # - ./nginx-config/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./nginx-config/:/etc/nginx/nginx-config
     networks:
       - wp-net

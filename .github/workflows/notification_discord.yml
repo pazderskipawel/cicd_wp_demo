@@ -2,7 +2,9 @@ name: Send Discord Notification
 
 on:
   workflow_call:
-
+    secrets:
+      DISCORD_WEBHOOK_URL:
+        required: true
 jobs:
   notify-on-fail:
     runs-on: [self-hosted]
@@ -10,9 +12,8 @@ jobs:
       - name: Notify Discord on failure
         #https://github.com/marketplace/actions/actions-status-discord
         uses: sarisia/actions-status-discord@v1
-        if: failure()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          title: "❌ Build Failed"
-          description: "Job `${{ github.job }}` in workflow `${{ github.workflow }}` failed on `${{ github.ref_name }}`."
+          title: "❌ Error during build"
+          description: "There was an error in workflow `${{ github.workflow }}` on branch `${{ github.ref_name }}`."
           color: 0xff0000
