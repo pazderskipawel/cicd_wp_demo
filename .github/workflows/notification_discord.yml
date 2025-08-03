@@ -15,5 +15,5 @@ jobs:
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           title: "❌ Build Failed"
-          description: "Job `${{ github.job }}` in workflow `${{ github.workflow }}` failed on `${{ github.ref_name }}`."
+          description: "Build in workflow `${{ github.workflow }}` failed on branch `${{ github.ref_name }}`."
           color: 0xff0000
