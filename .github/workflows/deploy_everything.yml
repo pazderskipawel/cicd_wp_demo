@@ -5,6 +5,7 @@ on:
     paths-ignore:
       - 'README.md'
       - '.github/ISSUE_TEMPLATE/*'
+      - 'LICENSE'
   workflow_dispatch:
 
 concurrency:
