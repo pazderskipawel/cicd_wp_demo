@@ -12,7 +12,6 @@ on:
       RUNNER_SUDO_PASSWD: 
         required: true
   
-
 jobs:
   check-out-environment:
     runs-on: [self-hosted]
@@ -38,13 +37,6 @@ jobs:
           else
             echo "Docker Compose is already installed."
           fi
-  clean-up-last-build:
-    needs: check-out-environment
-    uses: ./.github/workflows/environment_docker_cleanup.yml
-  prepare-environment-for-app:
-    needs: clean-up-last-build
-    runs-on: [self-hosted]
-    steps:
       - name: Create .env file
         uses: SpicyPizza/create-envfile@v2.0
         with:
@@ -64,7 +56,7 @@ jobs:
           export DIRS="webapp/backups"
           mkdir -p $DIRS
           chown ${{ vars.OS_USERNAME }}:${{ vars.OS_USERGROUP }} $DIRS
-      - name: create certificates if not exist
+      - name: Create https certificates if not exist
         run: | 
           if [ ! -f ./localhost.pem ] || [ ! -f ./localhost-key.pem ]; then
             echo "Creating certificates..."
