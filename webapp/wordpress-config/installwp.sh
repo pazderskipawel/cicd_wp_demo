@@ -1,6 +1,5 @@
 #!/bin/bash
 # Finish installation of wordpress using cli
-su deployuser -c "
 cd /var/www/html &&
 exec wp core install \
   --url=${WORDPRESS_URL} \

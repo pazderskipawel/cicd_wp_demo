@@ -4,7 +4,7 @@ on:
   workflow_call:  
 
 jobs:
-  start-containers:
+  start-containers-and-mount-configs:
     runs-on: [self-hosted]
     steps:
       - name: Start WordPress Containers
@@ -15,10 +15,6 @@ jobs:
           max_attempts: 3
           retry_on: error
           command: docker compose --env-file .env -f webapp/docker-compose.yml up -d
-  setup-configurations:
-    needs: start-containers
-    runs-on: [self-hosted]
-    steps:
       - name: Move Nginx configuration files to proper directory after container started
         # This step is necessary to the server to handle HTTPS using mkcert.
         run: |
@@ -28,5 +24,5 @@ jobs:
         run: |
           docker exec wordpress /bin/bash -c "chmod +x /var/www/wordpress-config/*.sh"
   configure-wordpress:
-    needs: setup-configurations
+    needs: start-containers-and-mount-configs
     uses: ./.github/workflows/app_configure_wordpress.yml
