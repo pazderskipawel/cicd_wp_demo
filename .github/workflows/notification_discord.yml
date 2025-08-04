@@ -7,7 +7,7 @@ on:
         required: true
 jobs:
   notify-on-fail:
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest
     steps:
       - name: Notify Discord on failure
         #https://github.com/marketplace/actions/actions-status-discord
