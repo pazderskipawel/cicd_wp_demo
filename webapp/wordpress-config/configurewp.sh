@@ -1,9 +1,4 @@
 #!/bin/bash
-# Wait for DB to be ready
-until echo > /dev/tcp/db/3306; do
-  echo "Waiting for database connection..."
-  sleep 5
-done
 # Finish installation of wordpress using cli
 su deployuser -c "
 cd /var/www/html &&
