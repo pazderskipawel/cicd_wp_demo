@@ -25,7 +25,7 @@ jobs:
         run: |
           docker exec wordpress /bin/bash -c "/var/www/wordpress-config/checkdb.sh"
   configure-wordpress:
-    needs: install-wp-cli
+    needs: check-if-database-is-ready
     runs-on: [self-hosted]
     steps:
       - name: Configure WordPress
