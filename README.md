@@ -1,5 +1,5 @@
 # WordPress CI/CD Demo
-This repository sets up Docker containers for WordPress and MySQL using `docker-compose`. Configuration is managed via Bash scripts, allowing reuse inside containers. The CI/CD pipeline is powered by GitHub Actions and runs on a self-hosted Ubuntu runner.
+This repository sets up Docker containers for WordPress and MySQL using `docker-compose`. Configuration is managed by CICD workflows so everything should be installed automatically. Repo uses "nested" workflows so all actions should be clear and reusable if needed. The CI/CD pipeline is powered by GitHub Actions and runs on a self-hosted Ubuntu runner.
 ## Overview
 - Project Purpose: Dockerized WordPress + MySQL with CI/CD via GitHub Actions
 - Runner Type: Self-hosted Ubuntu runner
@@ -12,7 +12,6 @@ This repository sets up Docker containers for WordPress and MySQL using `docker-
   - If you want to autostart worker use `sudo ./svc.sh` instead of `.run.sh`, it will work as service ([source](https://docs.github.com/en/actions/how-tos/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service))
 - After setting up runner everything should be installed automatically on it after triggering workflow
 ## CI/CD Workflows
-- Repo uses "nested" workflows so everything should be clear and reusable if needed
 - Summary of main workflow:
   #### 1. Clean up last environment
   1. Clean up current docker resources related to project
@@ -28,8 +27,12 @@ This repository sets up Docker containers for WordPress and MySQL using `docker-
   1. Start containers and mount eeded configurations
   2. Copy configurations to containers
   #### 5. Send notifications when build failed or was skipped
+- There is sepaeate action for maintenance, workflow is activated manually and allows to choose which job should be started
+  #### 1. List installed wordpress plugins
+  #### 2. List repository secrets
+  #### 3. Docker images cleanup
+  #### 4. Configure wordpress
+  #### 5. Perform app validation
+  
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 
-## Maintenance & Cleanup
-- Some actions can be triggered manually, to speed up some processes and to help troubleshoot the app
-- Workflow failure notifications - in case any step of workflow fails it should send a notification to discord (currently)
