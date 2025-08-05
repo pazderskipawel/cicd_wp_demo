@@ -26,7 +26,7 @@ jobs:
         run: |
           docker exec wordpress /bin/bash -c "
             wp core install \
-            --url="http://localhost" \
+            --url="localhost" \
             --title="${{ vars.WORDPRESS_SITE_TITLE }}" \
             --admin_user="${{ vars.WORDPRESS_ADMIN_USER }}" \
             --admin_password="${{ secrets.WORDPRESS_ADMIN_PASSWORD }}" \
@@ -36,4 +36,4 @@ jobs:
       #- name: Set up urls
       #  run: |
       #    docker exec wordpress /bin/bash -c "wp option update home "http://localhost" --allow-root --path=/var/www/html"
-      #    docker exec wordpress /bin/bash -c "wp option update siteurl "" --allow-root --path=/var/www/html"
+      #    docker exec wordpress /bin/bash -c "wp option update siteurl "http://localhost" --allow-root --path=/var/www/html"
