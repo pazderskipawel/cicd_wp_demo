@@ -9,15 +9,7 @@ jobs:
   notify-on-fail:
     runs-on: ubuntu-latest
     steps:
-      - name: Notify Discord on failure
-        #https://github.com/marketplace/actions/actions-status-discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          title: "❌ Error during build"
-          description: "There was an error in workflow `${{ github.workflow }}` on branch `${{ github.ref_name }}`."
-          color: 0xff0000
-      - name: Notify on failure (Custom)
+      - name: Notify on Discord about failure
         run: |
           if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             curl -H "Content-Type: application/json" \

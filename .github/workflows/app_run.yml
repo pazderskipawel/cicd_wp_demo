@@ -29,9 +29,6 @@ jobs:
         run: |
           docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
           docker exec https /bin/bash -c "service nginx reload"
-      - name: Copy wordpress configuration files to container
-        run: |
-          docker exec wordpress /bin/bash -c "chmod +x /var/www/wordpress-config/*.sh"
   configure-wordpress:
     needs: start-containers-and-mount-configs
     uses: ./.github/workflows/app_configure_wordpress.yml
