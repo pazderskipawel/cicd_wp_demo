@@ -8,23 +8,23 @@ jobs:
     steps:
       - name: Install WP-CLI
         run: |
-          docker exec wordpress /bin/bash << 'EOF' 
-            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-            chmod +x wp-cli.phar
+          docker exec wordpress /bin/bash -c "
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar;
+            chmod +x wp-cli.phar;
             mv wp-cli.phar /usr/local/bin/wp
-          EOF
+          "
       - name: Check if database is ready
         run: |
-          docker exec wordpress /bin/bash << 'EOF' 
+          docker exec wordpress /bin/bash -c " 
             until echo > /dev/tcp/db/3306; do
-              echo "Waiting for database connection..."
-              sleep 3
-            done
-            echo "Database is ready"
-          EOF
+              echo 'Waiting for database connection...';
+              sleep 3;
+            done;
+            echo 'Database is ready'
+          "
       - name: Configure WordPress
         run: |
-          docker exec wordpress /bin/bash << 'EOF'
+          docker exec wordpress /bin/bash -c "
             wp core install \
             --url="${WORDPRESS_URL}" \
             --title="${WORDPRESS_SITE_TITLE}" \
@@ -32,7 +32,7 @@ jobs:
             --admin_password="${WORDPRESS_ADMIN_PASSWORD}" \
             --admin_email="${WORDPRESS_ADMIN_EMAIL}" \
             --allow-root --path=/var/www/html
-          EOF
+          "
       - name: Set up urls
         run: |
           docker exec wordpress /bin/bash -c "wp option update home "http://localhost" --allow-root --path=/var/www/html"
