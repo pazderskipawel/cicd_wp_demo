@@ -1,6 +1,9 @@
 name: WordPress Configuration
 on:
   workflow_call:
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD:
+        required: true
 
 jobs:
   configure-wordpress:

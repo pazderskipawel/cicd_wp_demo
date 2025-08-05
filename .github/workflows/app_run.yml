@@ -39,3 +39,5 @@ jobs:
   configure-wordpress:
     needs: start-containers-and-mount-configs
     uses: ./.github/workflows/app_configure_wordpress.yml
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
