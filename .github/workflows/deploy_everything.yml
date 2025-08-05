@@ -4,8 +4,8 @@ on:
   push:
     paths-ignore:
       - 'README.md'
+      - 'LICENSE.md'
       - '.github/ISSUE_TEMPLATE/*'
-      - 'LICENSE'
   workflow_dispatch:
 
 concurrency:

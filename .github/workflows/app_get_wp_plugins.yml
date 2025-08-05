@@ -1,4 +1,4 @@
-name: get WordPress Plugins
+name: Get WordPress Plugins
 
 on:
   workflow_dispatch:
