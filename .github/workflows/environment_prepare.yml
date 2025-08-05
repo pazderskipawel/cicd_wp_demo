@@ -14,7 +14,7 @@ on:
   
 jobs:
   check-out-environment:
-    runs-on: [self-hosted]
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -37,20 +37,6 @@ jobs:
           else
             echo "Docker Compose is already installed."
           fi
-      - name: Create .env file
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          envkey_WORDPRESS_SITE_TITLE: ${{ vars.WORDPRESS_SITE_TITLE }}
-          envkey_WORDPRESS_ADMIN_USER: ${{ vars.WORDPRESS_ADMIN_USER }}
-          envkey_WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
-          envkey_WORDPRESS_ADMIN_EMAIL: ${{ vars.WORDPRESS_ADMIN_EMAIL }}    
-          envkey_WORDPRESS_DB_NAME: ${{ vars.WORDPRESS_DB_NAME }}
-          envkey_WORDPRESS_DB_USER: ${{ vars.WORDPRESS_DB_USER }}
-          envkey_WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
-          envkey_MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          file_name: .env
-          fail_on_empty: false
-          sort_keys: false
       - name: Prepare bind mount directories
         run: |
           export DIRS="webapp/backups"

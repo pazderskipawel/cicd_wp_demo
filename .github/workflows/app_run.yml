@@ -1,11 +1,18 @@
 name: Run Application
 
 on:
-  workflow_call:  
+  workflow_call: 
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: 
+        required: true
+      WORDPRESS_DB_PASSWORD: 
+        required: true
+      MYSQL_ROOT_PASSWORD: 
+        required: true
 
 jobs:
   start-containers-and-mount-configs:
-    runs-on: [self-hosted]
+    runs-on: self-hosted
     steps:
       - name: Start WordPress Containers
         uses: nick-fields/retry@v3
@@ -14,15 +21,23 @@ jobs:
           timeout_minutes: 10
           max_attempts: 3
           retry_on: error
-          command: docker compose --env-file .env -f webapp/docker-compose.yml up -d
+          command: |
+            WORDPRESS_SITE_TITLE="${{ vars.WORDPRESS_SITE_TITLE }}" \
+            WORDPRESS_ADMIN_USER="${{ vars.WORDPRESS_ADMIN_USER }}" \
+            WORDPRESS_ADMIN_PASSWORD="${{ secrets.WORDPRESS_ADMIN_PASSWORD }}" \
+            WORDPRESS_ADMIN_EMAIL="${{ vars.WORDPRESS_ADMIN_EMAIL }}" \
+            WORDPRESS_DB_NAME="${{ vars.WORDPRESS_DB_NAME }}" \
+            WORDPRESS_DB_USER="${{ vars.WORDPRESS_DB_USER }}" \
+            WORDPRESS_DB_PASSWORD="${{ secrets.WORDPRESS_DB_PASSWORD }}" \
+            MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}" \
+            docker compose -f webapp/docker-compose.yml up -d
       - name: Move Nginx configuration files to proper directory after container started
         # This step is necessary to the server to handle HTTPS using mkcert.
         run: |
           docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
           docker exec https /bin/bash -c "service nginx reload"
-      - name: Copy wordpress configuration files to container
-        run: |
-          docker exec wordpress /bin/bash -c "chmod +x /var/www/wordpress-config/*.sh"
   configure-wordpress:
     needs: start-containers-and-mount-configs
     uses: ./.github/workflows/app_configure_wordpress.yml
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}

@@ -1,21 +1,42 @@
 name: WordPress Configuration
 on:
-  workflow_dispatch:
   workflow_call:
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD:
+        required: true
 
 jobs:
   configure-wordpress:
-    runs-on: [self-hosted]
+    runs-on: self-hosted
     steps:
       - name: Install WP-CLI
         run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/installwpcli.sh"
+          docker exec wordpress /bin/bash -c "
+            curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar;
+            chmod +x wp-cli.phar;
+            mv wp-cli.phar /usr/local/bin/wp
+          "
       - name: Check if database is ready
         run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/checkdb.sh"
+          docker exec wordpress /bin/bash -c " 
+            until echo > /dev/tcp/db/3306; do
+              echo 'Waiting for database connection...';
+              sleep 3;
+            done;
+            echo 'Database is ready'
+          "
       - name: Configure WordPress
         run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/installwp.sh"
-      - name: Set up urls
-        run: |
-          docker exec wordpress /bin/bash -c "/var/www/wordpress-config/setupurls.sh"
+          docker exec wordpress /bin/bash -c "
+            wp core install \
+            --url="localhost" \
+            --title="${{ vars.WORDPRESS_SITE_TITLE }}" \
+            --admin_user="${{ vars.WORDPRESS_ADMIN_USER }}" \
+            --admin_password="${{ secrets.WORDPRESS_ADMIN_PASSWORD }}" \
+            --admin_email="${{ vars.WORDPRESS_ADMIN_EMAIL }}" \
+            --allow-root --path=/var/www/html
+          "
+      #- name: Set up urls
+      #  run: |
+      #    docker exec wordpress /bin/bash -c "wp option update home "http://localhost" --allow-root --path=/var/www/html"
+      #    docker exec wordpress /bin/bash -c "wp option update siteurl "http://localhost" --allow-root --path=/var/www/html"

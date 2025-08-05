@@ -28,10 +28,18 @@ jobs:
   validate-app:
     needs: prepare-environment
     uses: ./.github/workflows/app_validate.yml
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
+      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
   run-app:
     needs: validate-app
     uses:  ./.github/workflows/app_run.yml
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
+      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
   notify-if-any-step-fails:
     needs: [prepare-environment, validate-app, run-app]

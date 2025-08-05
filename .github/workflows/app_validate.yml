@@ -1,11 +1,26 @@
 name: Validate Docker Compose File
 
 on:
-  workflow_dispatch:
   workflow_call:
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: 
+        required: true
+      WORDPRESS_DB_PASSWORD: 
+        required: true
+      MYSQL_ROOT_PASSWORD: 
+        required: true
 
 jobs:
-  validate-app:
-    runs-on: [self-hosted]
+  docker-comnpse-dry-dun:
+    runs-on: self-hosted
     steps:
-      - run: docker compose --env-file .env -f webapp/docker-compose.yml up -d --dry-run
+      - run: docker compose -f webapp/docker-compose.yml up -d --dry-run
+        env:
+          WORDPRESS_SITE_TITLE: ${{ vars.WORDPRESS_SITE_TITLE }}
+          WORDPRESS_ADMIN_USER: ${{ vars.WORDPRESS_ADMIN_USER }}
+          WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
+          WORDPRESS_ADMIN_EMAIL: ${{ vars.WORDPRESS_ADMIN_EMAIL }}
+          WORDPRESS_DB_NAME: ${{ vars.WORDPRESS_DB_NAME }}
+          WORDPRESS_DB_USER: ${{ vars.WORDPRESS_DB_USER }}
+          WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
