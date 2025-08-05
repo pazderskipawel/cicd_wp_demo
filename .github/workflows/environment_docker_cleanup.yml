@@ -1,12 +1,11 @@
 name: Cleanup Docker Images and Containers
 
 on:
-  workflow_dispatch:
   workflow_call: 
 
 jobs:
   cleanup-docker:
-    runs-on: [self-hosted]
+    runs-on: self-hosted
     steps:
         - run: |
             docker compose -f webapp/docker-compose.yml down -v --rmi all --remove-orphans

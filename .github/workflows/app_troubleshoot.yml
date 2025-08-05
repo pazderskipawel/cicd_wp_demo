@@ -1,0 +1,67 @@
+name: Troubleshoot WordPress Application
+
+on:
+  workflow_dispatch:
+    inputs:
+      get_plugins:
+        description: 'List plugins'
+        required: false
+        default: true
+        type: boolean
+      get_repo_secrets: 
+        description: 'List repository secrets'
+        required: false
+        default: true
+        type: boolean
+      cleanup_docker:   
+        description: 'Cleanup Docker environment'
+        required: false
+        default: true
+        type: boolean
+      configure_wordpress:
+        description: 'Configure WordPress'
+        required: false
+        default: true
+        type: boolean
+      validate_app:
+        description: 'Validate application'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  list-wp-plugins:
+    runs-on: self-hosted
+    if: github.event.inputs.get_plugins == 'true'
+    steps:
+      - name: List WordPress plugins
+        run: | 
+            if docker ps | grep -q wordpress; then
+            docker exec wordpress /bin/bash -c "wp plugin list --allow-root --path=/var/www/html"
+            else
+            echo "WordPress container not running"
+            exit 1
+            fi
+  get-repo-secrets:
+    if: github.event.inputs.get_repo_secrets == 'true'
+    runs-on: self-hosted
+    steps:
+      - run: | 
+          echo "WordPress Admin User: ${{ vars.WORDPRESS_ADMIN_USER }}"
+          echo "WordPress Admin Password: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}"
+          echo "WordPress DB Name: ${{ vars.WORDPRESS_DB_NAME }}"
+          echo "WordPress DB User: ${{ vars.WORDPRESS_DB_USER }}"
+          echo "WordPress DB Password: ${{ secrets.WORDPRESS_DB_PASSWORD }}"
+  cleanup-docker:
+    if: github.event.inputs.cleanup_docker == 'true'
+    uses: ./.github/workflows/environment_docker_cleanup.yml
+  configure-wordpress:
+    if: github.event.inputs.configure_wordpress == 'true'
+    uses: ./.github/workflows/app_configure_wordpress.yml
+  validate-app:
+    if: github.event.inputs.validate_app == 'true'
+    uses: ./.github/workflows/app_validate.yml
+    secrets:
+      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
+      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
