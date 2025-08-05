@@ -34,5 +34,5 @@ jobs:
           EOF
       - name: Set up urls
         run: |
-          docker exec wordpress wp option update home "http://localhost" --allow-root --path=/var/www/html
-          docker exec wordpress wp option update siteurl "http://localhost" --allow-root --path=/var/www/html
+          docker exec wordpress /bin/bash -c "wp option update home "http://localhost" --allow-root --path=/var/www/html"
+          docker exec wordpress /bin/bash -c "wp option update siteurl "http://localhost" --allow-root --path=/var/www/html"
