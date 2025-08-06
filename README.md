@@ -12,27 +12,26 @@ This repository sets up Docker containers for WordPress and MySQL using `docker-
   - If you want to autostart worker use `sudo ./svc.sh` instead of `.run.sh`, it will work as service ([source](https://docs.github.com/en/actions/how-tos/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service))
 - After setting up runner everything should be installed automatically on it after triggering workflow
 ## CI/CD Workflows
-- Summary of main workflow:
-  #### 1. Clean up last environment
-  1. Clean up current docker resources related to project
-  #### 2. Prepare environment
-  1. Check out current environment 
-  2. Install docker and docker compose if its not installed 
-  3. Creates `.env` file
-  4. Creates directories that will be mounted to images 
-  5. Creates https certificates using mkcert
-  #### 3. Validate app
-  1. Performs dry run for docker compose 
-  #### 4. Run app 
-  1. Start containers and mount eeded configurations
-  2. Copy configurations to containers
-  #### 5. Send notifications when build failed or was skipped
-- There is sepaeate action for maintenance, workflow is activated manually and allows to choose which job should be started
-  #### 1. List installed wordpress plugins
-  #### 2. List repository secrets
-  #### 3. Docker images cleanup
-  #### 4. Configure wordpress
-  #### 5. Perform app validation
+### Summary of main workflow:
+  1. Clean up last environment
+      1. Clean up current docker resources related to project
+  2. Prepare environment
+      1. Check out current environment 
+      2. Install docker and docker compose if its not installed 
+      4. Creates directories that will be mounted to images 
+      5. Creates https certificates using mkcert
+  3. Validate app
+      1. Performs dry run for docker compose 
+  4. Run app 
+      1. Start containers and mount eeded configurations
+      2. Copy configurations to containers
+  5. Send notifications when build failed or was skipped
+### Maintenance workflow - activated manually, allows to choose which jobs from below list should be started
+  1. List installed wordpress plugins
+  2. List repository secrets
+  3. Docker images cleanup
+  4. Configure wordpress
+  5. Perform app validation
   
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 
