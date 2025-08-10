@@ -28,6 +28,10 @@ jobs:
   validate-app:
     needs: prepare-environment
     uses: ./.github/workflows/app_validate.yml
+    with:
+      docker_installed: ${{ needs.prepare-environment.outputs.docker_installed }}
+      docker_compose_installed: ${{ needs.prepare-environment.outputs.docker_compose_installed }}
+      mkcert_installed: ${{ needs.prepare-environment.outputs.mkcert_installed }}
     secrets:
       WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
       WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}

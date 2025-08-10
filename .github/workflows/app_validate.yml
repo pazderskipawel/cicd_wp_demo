@@ -9,23 +9,33 @@ on:
         required: true
       MYSQL_ROOT_PASSWORD: 
         required: true
+    inputs:
+      docker_installed:
+        required: true
+        type: string
+      docker_compose_installed:
+        required: true
+        type: string
+      mkcert_installed:
+        required: true
+        type: string
 
 jobs:
   docker-comnpse-dry-dun:
     runs-on: self-hosted
     steps:
       - name: Check if anything had to be installed
-        if: ${{ needs.check-out-environment.outputs.docker_installed == '2' || needs.check-out-environment.outputs.docker_compose_installed == '2' || needs.check-out-environment.outputs.mkcert_installed == '2' }}
+        if: ${{ inputs.docker_installed == '2' || inputs.docker_compose_installed == '2' || inputs.mkcert_installed == '2' }}
         run: |
-          if [ "${{ needs.check-out-environment.outputs.docker_installed }}" == "2" ]; then
+          if [ "${{ inputs.docker_installed }}" == "2" ]; then
             echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
             exit 1
           fi
-          if [ "${{ needs.check-out-environment.outputs.docker_compose_installed }}" == "2" ]; then
+          if [ "${{ inputs.docker_compose_installed }}" == "2" ]; then
             echo "::warning:: docker compose had to be installed by cicd workflow. Please check runner status"
             exit 1
           fi
-          if [ "${{ needs.check-out-environment.outputs.mkcert_installed }}" == "2" ]; then
+          if [ "${{ inputs.mkcert_installed }}" == "2" ]; then
             echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
             exit 1
           fi

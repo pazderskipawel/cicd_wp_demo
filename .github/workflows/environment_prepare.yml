@@ -11,10 +11,24 @@ on:
         required: true
       RUNNER_SUDO_PASSWD: 
         required: true
+    outputs:
+      docker_installed: 
+        description: 'Indicates if Docker was installed (1 for yes, 0 for no)'
+        value: ${{ jobs.check-out-environment.outputs.docker_installed }}
+      docker_compose_installed: 
+        description: 'Indicates if Docker Compose was installed (1 for yes, 0 for no)'
+        value: ${{ jobs.check-out-environment.outputs.docker_compose_installed }}
+      mkcert_installed: 
+        description: 'Indicates if mkcert was installed (1 for yes, 0 for no)'
+        value: ${{ jobs.check-out-environment.outputs.mkcert_installed }}
   
 jobs:
   check-out-environment:
     runs-on: self-hosted
+    outputs:
+      docker_installed: ${{ steps.check.outputs.docker_installed }}
+      docker_compose_installed: ${{ steps.check.outputs.docker_compose_installed }}
+      mkcert_installed: ${{ steps.check.outputs.mkcert_installed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
