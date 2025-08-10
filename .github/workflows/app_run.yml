@@ -13,7 +13,6 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          retry_on: error
           command: |
             WORDPRESS_SITE_TITLE="${{ vars.WORDPRESS_SITE_TITLE }}" \
             WORDPRESS_ADMIN_USER="${{ vars.WORDPRESS_ADMIN_USER }}" \
