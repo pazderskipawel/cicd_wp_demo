@@ -5,28 +5,28 @@ on:
     inputs:
       docker_installed:
         required: true
-        type: string
+        type: boolean
       docker_compose_installed:
         required: true
-        type: string
+        type: boolean
       mkcert_installed:
         required: true
-        type: string
+        type: boolean
 
 jobs:
   docker-comnpse-dry-dun:
     runs-on: self-hosted
     steps:
       - name: Check if anything had to be installed
-        if: ${{ inputs.docker_installed == '1' || inputs.docker_compose_installed == '1' || inputs.mkcert_installed == '1' }}
+        if: ${{ inputs.docker_installed == 'true' || inputs.docker_compose_installed == 'true' || inputs.mkcert_installed == 'true' }}
         run: |
-          if [ "${{ inputs.docker_installed }}" == "1" ]; then
+          if [ "${{ inputs.docker_installed }}" == "true" ]; then
             echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
           fi
-          if [ "${{ inputs.docker_compose_installed }}" == "1" ]; then
+          if [ "${{ inputs.docker_compose_installed }}" == "true" ]; then
             echo "::warning:: docker compose had to be installed by cicd workflow. Please check runner status"
           fi
-          if [ "${{ inputs.mkcert_installed }}" == "1" ]; then
+          if [ "${{ inputs.mkcert_installed }}" == "true" ]; then
             echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
           fi
       - name: Dry-run app
