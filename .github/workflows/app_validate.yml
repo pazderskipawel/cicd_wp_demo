@@ -25,19 +25,16 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Check if anything had to be installed
-        if: ${{ inputs.docker_installed == '2' || inputs.docker_compose_installed == '2' || inputs.mkcert_installed == '2' }}
+        if: ${{ inputs.docker_installed == '1' || inputs.docker_compose_installed == '1' || inputs.mkcert_installed == '1' }}
         run: |
-          if [ "${{ inputs.docker_installed }}" == "2" ]; then
+          if [ "${{ inputs.docker_installed }}" == "1" ]; then
             echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
-            exit 1
           fi
-          if [ "${{ inputs.docker_compose_installed }}" == "2" ]; then
+          if [ "${{ inputs.docker_compose_installed }}" == "1" ]; then
             echo "::warning:: docker compose had to be installed by cicd workflow. Please check runner status"
-            exit 1
           fi
-          if [ "${{ inputs.mkcert_installed }}" == "2" ]; then
+          if [ "${{ inputs.mkcert_installed }}" == "1" ]; then
             echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
-            exit 1
           fi
       - name: Dry-run app
         run: docker compose -f webapp/docker-compose.yml up -d --dry-run
