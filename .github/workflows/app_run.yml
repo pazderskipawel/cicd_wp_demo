@@ -11,7 +11,7 @@ jobs:
         uses: nick-fields/retry@v3
         #https://github.com/marketplace/actions/retry-step
         with:
-          timeout_minutes: 10
+          timeout_minutes: 5
           max_attempts: 3
           command: |
             WORDPRESS_SITE_TITLE="${{ vars.WORDPRESS_SITE_TITLE }}" \
