@@ -20,10 +20,7 @@ jobs:
     needs: clean-up-last-build
     uses: ./.github/workflows/environment_prepare.yml
     secrets: 
-      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
-      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      RUNNER_SUDO_PASSWD: ${{ secrets.RUNNER_SUDO_PASSWD }}
+      inherit
 
   validate-app:
     needs: prepare-environment
@@ -33,21 +30,17 @@ jobs:
       docker_compose_installed: ${{ needs.prepare-environment.outputs.docker_compose_installed_by_cicd }}
       mkcert_installed: ${{ needs.prepare-environment.outputs.mkcert_installed_by_cicd }}
     secrets:
-      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
-      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      inherit
 
   run-app:
     needs: validate-app
     uses:  ./.github/workflows/app_run.yml
     secrets:
-      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
-      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      inherit
 
   notify-if-any-step-fails:
     needs: [prepare-environment, validate-app, run-app]
     if: failure() || cancelled()
     uses: ./.github/workflows/notification_discord.yml
     secrets:
-      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      inherit

@@ -2,13 +2,6 @@ name: Validate Docker Compose File
 
 on:
   workflow_call:
-    secrets:
-      WORDPRESS_ADMIN_PASSWORD: 
-        required: true
-      WORDPRESS_DB_PASSWORD: 
-        required: true
-      MYSQL_ROOT_PASSWORD: 
-        required: true
     inputs:
       docker_installed:
         required: true
