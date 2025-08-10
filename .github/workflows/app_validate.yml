@@ -14,7 +14,23 @@ jobs:
   docker-comnpse-dry-dun:
     runs-on: self-hosted
     steps:
-      - run: docker compose -f webapp/docker-compose.yml up -d --dry-run
+      - name: Check if anything had to be installed
+        if: ${{ needs.check-out-environment.outputs.docker_installed == '2' || needs.check-out-environment.outputs.docker_compose_installed == '2' || needs.check-out-environment.outputs.mkcert_installed == '2' }}
+        run: |
+          if [ "${{ needs.check-out-environment.outputs.docker_installed }}" == "2" ]; then
+            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
+            exit 1
+          fi
+          if [ "${{ needs.check-out-environment.outputs.docker_compose_installed }}" == "2" ]; then
+            echo "::warning:: docker compose had to be installed by cicd workflow. Please check runner status"
+            exit 1
+          fi
+          if [ "${{ needs.check-out-environment.outputs.mkcert_installed }}" == "2" ]; then
+            echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
+            exit 1
+          fi
+      - name: Dry-run app
+        run: docker compose -f webapp/docker-compose.yml up -d --dry-run
         env:
           WORDPRESS_SITE_TITLE: ${{ vars.WORDPRESS_SITE_TITLE }}
           WORDPRESS_ADMIN_USER: ${{ vars.WORDPRESS_ADMIN_USER }}
