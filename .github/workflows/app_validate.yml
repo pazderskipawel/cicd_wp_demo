@@ -1,4 +1,4 @@
-name: Validate Docker Compose File
+name: App Validation
 
 on:
   workflow_call:
@@ -14,7 +14,7 @@ on:
         type: string
 
 jobs:
-  docker-comnpse-dry-dun:
+  validate-app:
     runs-on: self-hosted
     steps:
       - name: Check if anything had to be installed
