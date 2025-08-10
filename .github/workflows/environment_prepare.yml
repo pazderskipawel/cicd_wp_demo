@@ -67,7 +67,6 @@ jobs:
             echo "Installing mkcert..."
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
-            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S  mkcert -install
             echo "mkcert_installed=2" >> $GITHUB_OUTPUT
           fi
       - name: Prepare bind mount directories
@@ -78,6 +77,7 @@ jobs:
       - name: Create https certificates if not exist
         run: | 
           if [ ! -f ./localhost.pem ] || [ ! -f ./localhost-key.pem ]; then
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S  mkcert -install
             echo "Creating certificates..."
             mkcert localhost
             mv *.pem ./webapp/nginx-config/
