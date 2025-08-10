@@ -23,24 +23,24 @@ jobs:
         run: |
           if ! command -v docker &> /dev/null; then
             echo "Docker is not installed. It will be installed in the next step." 
-            echo "docker_installed = 0" >> $GITHUB_OUTPUT
+            echo "docker_installed=0" >> $GITHUB_OUTPUT
           else
             echo "Docker is already installed."
-            echo "docker_installed = 1" >> $GITHUB_OUTPUT
+            echo "docker_installed=1" >> $GITHUB_OUTPUT
           fi
           if ! docker compose version &> /dev/null; then
             echo "Docker Compose is not installed. It will be installed in the next step."
-            echo "docker_compose_installed = 0" >> $GITHUB_OUTPUT
+            echo "docker_compose_installed=0" >> $GITHUB_OUTPUT
           else
             echo "Docker Compose is already installed."
-            echo "docker_compose_installed = 1" >> $GITHUB_OUTPUT
+            echo "docker_compose_installed=1" >> $GITHUB_OUTPUT
           fi
           if ! command -v mkcert &> /dev/null; then
             echo "mkcert is not installed. It will be installed in the next step."
-            echo "mkcert_installed = 0" >> $GITHUB_OUTPUT
+            echo "mkcert_installed=0" >> $GITHUB_OUTPUT
           else 
             echo "mkcert is already installed."
-            echo "mkcert_installed = 1" >> $GITHUB_OUTPUT     
+            echo "mkcert_installed=1" >> $GITHUB_OUTPUT     
           fi
       - name: Install components if not installed
         if: steps.check.outputs.docker_installed == '0' || steps.check.outputs.docker_compose_installed == '0' || steps.check.outputs.mkcert_installed == '0'
@@ -53,7 +53,7 @@ jobs:
             # curl -fsSL https://get.docker.com -o get-docker.sh
             # sudo sh get-docker.sh
             # sudo usermod -aG docker $USER
-            echo "docker_installed = 2" >> $GITHUB_OUTPUT
+            echo "docker_installed=2" >> $GITHUB_OUTPUT
           fi
           if [ "${{ steps.check.outputs.docker_compose_installed }}" == "0" ]; then
             echo "Installing Docker Compose..."
@@ -61,14 +61,14 @@ jobs:
             mkdir -p $DOCKER_CONFIG/cli-plugins
             curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
             chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-            echo "docker_compose_installed = 2" >> $GITHUB_OUTPUT
+            echo "docker_compose_installed=2" >> $GITHUB_OUTPUT
           fi
           if [ "${{ steps.check.outputs.mkcert_installed }}" == "0" ]; then
             echo "Installing mkcert..."
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
             mkcert -install
-            echo "mkcert_installed = 2" >> $GITHUB_OUTPUTS
+            echo "mkcert_installed=2" >> $GITHUB_OUTPUTS
           fi
       - name: Prepare bind mount directories
         run: |
