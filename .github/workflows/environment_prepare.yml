@@ -60,6 +60,8 @@ jobs:
             # sudo sh get-docker.sh
             # sudo usermod -aG docker $USER
             echo "docker_installed=true" >> $GITHUB_OUTPUT
+          else
+            echo "docker_installed=false" >> $GITHUB_OUTPUT
           fi
           if [ "${{ steps.check-components.outputs.is_docker_compose_installed }}" == "false" ]; then
             echo "Installing Docker Compose..."
@@ -69,11 +71,16 @@ jobs:
             chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
             echo "docker_compose_installed=true" >> $GITHUB_OUTPUT
           fi
+          else
+            echo "docker_compose_installed=false" >> $GITHUB_OUTPUT
+          fi
           if [ "${{ steps.check-components.outputs.is_mkcert_installed }}" == "false" ]; then
             echo "Installing mkcert..."
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
             echo "mkcert_installed=true" >> $GITHUB_OUTPUT
+          else
+            echo "mkcert_installed=false" >> $GITHUB_OUTPUT
           fi
       - name: Prepare bind mount directories
         run: |
