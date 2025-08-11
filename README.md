@@ -18,14 +18,22 @@ This repository sets up Docker containers for WordPress and MySQL using `docker-
   2. Prepare environment
       1. Check out current environment 
       2. Install docker and docker compose if its not installed 
-      4. Creates directories that will be mounted to images 
       5. Creates https certificates using mkcert
-  3. Validate app
-      1. Performs dry run for docker compose 
-  4. Run app 
+  3. Run app 
       1. Start containers and mount eeded configurations
       2. Copy configurations to containers
-  5. Send notifications when build failed or was skipped
+  4. Validate app
+      1. Checks if containers are working
+      2. Checks if website is available
+  5. Planned changes 
+      1. Move all previous steps to github hosted runner
+      2. Creates artifact
+      3. Stops containers
+      4. (self-hosted) Clean up last environment
+      5. (self-hosted) Prepares environment
+      6. (self-hosted) Downloads artifact
+      7. (self-hosted) Runs app
+  6. Send notifications when build failed or was skipped
 ### Maintenance workflow - activated manually, allows to choose which jobs from below list should be started
   1. List installed wordpress plugins
   2. List repository secrets

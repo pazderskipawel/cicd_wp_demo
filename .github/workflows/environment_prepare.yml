@@ -2,24 +2,10 @@ name: Prepare Environment
 
 on:
   workflow_call: 
-    outputs:
-      docker_installed_by_cicd: 
-        description: 'Indicates if Docker was installed (1 for yes, 0 for no)'
-        value: ${{ jobs.check-out-environment.outputs.docker_installed_by_cicd }}
-      docker_compose_installed_by_cicd: 
-        description: 'Indicates if Docker Compose was installed (1 for yes, 0 for no)'
-        value: ${{ jobs.check-out-environment.outputs.docker_compose_installed_by_cicd }}
-      mkcert_installed_by_cicd: 
-        description: 'Indicates if mkcert was installed (1 for yes, 0 for no)'
-        value: ${{ jobs.check-out-environment.outputs.mkcert_installed_by_cicd }}
   
 jobs:
   check-out-environment:
     runs-on: self-hosted
-    outputs:
-      docker_installed_by_cicd: ${{ steps.install-components.outputs.docker_installed }}
-      docker_compose_installed_by_cicd: ${{ steps.install-components.outputs.docker_compose_installed }}
-      mkcert_installed_by_cicd: ${{ steps.install-components.outputs.mkcert_installed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -59,7 +45,7 @@ jobs:
             # curl -fsSL https://get.docker.com -o get-docker.sh
             # sudo sh get-docker.sh
             # sudo usermod -aG docker $USER
-            echo "docker_installed=1" >> $GITHUB_OUTPUT
+            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
           fi
           if [ "${{ steps.check-components.outputs.is_docker_compose_installed }}" == "0" ]; then
             echo "Installing Docker Compose..."
@@ -67,13 +53,13 @@ jobs:
             mkdir -p $DOCKER_CONFIG/cli-plugins
             curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
             chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-            echo "docker_compose_installed=1" >> $GITHUB_OUTPUT
+            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
           fi
           if [ "${{ steps.check-components.outputs.is_mkcert_installed }}" == "0" ]; then
             echo "Installing mkcert..."
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
-            echo "mkcert_installed=1" >> $GITHUB_OUTPUT
+            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
           fi
       - name: Create https certificates if not exist
         run: | 

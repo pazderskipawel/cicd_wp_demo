@@ -22,21 +22,24 @@ jobs:
     secrets: 
       inherit
 
-  validate-app:
-    needs: prepare-environment
-    uses: ./.github/workflows/app_validate.yml
-    with:
-      docker_installed_by_cicd: ${{ needs.prepare-environment.outputs.docker_installed_by_cicd }}
-      docker_compose_installed_by_cicd: ${{ needs.prepare-environment.outputs.docker_compose_installed_by_cicd }}
-      mkcert_installed_by_cicd: ${{ needs.prepare-environment.outputs.mkcert_installed_by_cicd }}
-    secrets:
-      inherit
-
   run-app:
-    needs: validate-app
+    needs: prepare-environment
     uses:  ./.github/workflows/app_run.yml
     secrets:
       inherit
+
+  validate-app:
+    needs: run-app
+    uses: ./.github/workflows/app_validate.yml
+    secrets:
+      inherit
+  
+  #TODO create artifact with app #58
+ 
+  #stop-app:
+  #  if: github.ref_name != 'main'
+  #  needs: run-app
+  #  uses: ./.github/workflows/environment_docker_cleanup.yml
 
   notify-if-any-step-fails:
     needs: [prepare-environment, validate-app, run-app]

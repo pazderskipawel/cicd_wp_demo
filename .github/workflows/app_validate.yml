@@ -1,45 +1,46 @@
-name: App Validation
+name: App Test
 
 on:
   workflow_call:
-    inputs:
-      docker_installed_by_cicd:
-        required: false
-        default: '0'
-        type: string
-      docker_compose_installed_by_cicd:
-        required: false
-        default: '0'
-        type: string
-      mkcert_installed_by_cicd:
-        required: false
-        default: '0'
-        type: string
 
 jobs:
-  validate-app:
-    runs-on: self-hosted
-    steps:
-      - name: Check if anything had to be installed
-        if: ${{ inputs.docker_installed_by_cicd == '1' || inputs.docker_compose_installed_by_cicd == '1' || inputs.mkcert_installed_by_cicd == '1' }}
-        run: |
-          if [ "${{ inputs.docker_installed_by_cicd }}" == "1" ]; then
-            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
-          fi
-          if [ "${{ inputs.docker_compose_installed_by_cicd }}" == "1" ]; then
-            echo "::warning:: docker compose had to be installed by cicd workflow. Please check runner status"
-          fi
-          if [ "${{ inputs.mkcert_installed_by_cicd }}" == "1" ]; then
-            echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
-          fi
-      - name: Dry-run app
-        run: docker compose -f webapp/docker-compose.yml up -d --dry-run
-        env:
-          WORDPRESS_SITE_TITLE: ${{ vars.WORDPRESS_SITE_TITLE }}
-          WORDPRESS_ADMIN_USER: ${{ vars.WORDPRESS_ADMIN_USER }}
-          WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
-          WORDPRESS_ADMIN_EMAIL: ${{ vars.WORDPRESS_ADMIN_EMAIL }}
-          WORDPRESS_DB_NAME: ${{ vars.WORDPRESS_DB_NAME }}
-          WORDPRESS_DB_USER: ${{ vars.WORDPRESS_DB_USER }}
-          WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+    check-if-containers-are-running:
+      runs-on: self-hosted
+      steps:
+        - name: Check if containers are running
+          run: |
+            required_containers=(db wordpress https)
+            missing=0
+            for c in "${required_containers[@]}"; do
+              if ! docker ps --format '{{.Names}}' | grep -qw "$c"; then
+                echo "Container $c is NOT running."
+                missing=1
+              else
+                echo "Container $c is running."
+              fi
+            done
+            if [ "$missing" -eq 1 ]; then
+              echo "One or more required containers are not running."
+              exit 1
+            fi
+    check-if-website-is-available:
+        runs-on: self-hosted  
+        steps:
+          - name: Check if website is ready (SSL errors expected due to mkcert used)
+            uses: jtalk/url-health-check-action@v4
+            with:
+                #https://github.com/marketplace/actions/url-health-check
+                url: https://localhost|https://localhost/wp-admin|https://localhost/wp-login.php
+                max-attempts: 3
+                retry-delay: 5s
+            continue-on-error: true
+          - name: Check if website is ready (ignore SSL for mkcert)
+            run: |
+              urls=("https://localhost" "https://localhost/wp-admin" "https://localhost/wp-login.php")
+              for url in "${urls[@]}"; do
+                echo "Checking $url"
+                if ! curl -k --fail --retry 3 --retry-delay 5 "$url"; then
+                  echo "Health check failed for $url"
+                  exit 1
+                fi
+              done
