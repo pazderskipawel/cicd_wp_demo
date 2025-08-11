@@ -23,17 +23,6 @@ jobs:
               echo "One or more required containers are not running."
               exit 1
             fi
-    check-if-database-is-ready:
-      runs-on: self-hosted
-      steps:
-        - name: Check if database is ready
-          run: |
-            if echo > /dev/tcp/db/3306; then
-              echo "Database is ready."
-            else
-              echo "Database is not ready"
-              exit 1
-            fi
     check-if-wordpress-is-ready:
         runs-on: self-hosted  
         steps:
