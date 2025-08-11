@@ -26,9 +26,9 @@ jobs:
     needs: prepare-environment
     uses: ./.github/workflows/app_validate.yml
     with:
-      docker_installed: ${{ needs.prepare-environment.outputs.docker_installed_by_cicd }}
-      docker_compose_installed: ${{ needs.prepare-environment.outputs.docker_compose_installed_by_cicd }}
-      mkcert_installed: ${{ needs.prepare-environment.outputs.mkcert_installed_by_cicd }}
+      docker_installed_by_cicd: ${{ needs.prepare-environment.outputs.docker_installed_by_cicd }}
+      docker_compose_installed_by_cicd: ${{ needs.prepare-environment.outputs.docker_compose_installed_by_cicd }}
+      mkcert_installed_by_cicd: ${{ needs.prepare-environment.outputs.mkcert_installed_by_cicd }}
     secrets:
       inherit
 

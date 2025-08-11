@@ -3,14 +3,17 @@ name: App Validation
 on:
   workflow_call:
     inputs:
-      docker_installed:
-        required: true
+      docker_installed_by_cicd:
+        required: false
+        default: '0'
         type: string
-      docker_compose_installed:
-        required: true
+      docker_compose_installed_by_cicd:
+        required: false
+        default: '0'
         type: string
-      mkcert_installed:
-        required: true
+      mkcert_installed_by_cicd:
+        required: false
+        default: '0'
         type: string
 
 jobs:
@@ -18,15 +21,15 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Check if anything had to be installed
-        if: ${{ inputs.docker_installed == '1' || inputs.docker_compose_installed == '1' || inputs.mkcert_installed == '1' }}
+        if: ${{ inputs.docker_installed_by_cicd == '1' || inputs.docker_compose_installed_by_cicd == '1' || inputs.mkcert_installed_by_cicd == '1' }}
         run: |
-          if [ "${{ inputs.docker_installed }}" == "1" ]; then
+          if [ "${{ inputs.docker_installed_by_cicd }}" == "1" ]; then
             echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
           fi
-          if [ "${{ inputs.docker_compose_installed }}" == "1" ]; then
+          if [ "${{ inputs.docker_compose_installed_by_cicd }}" == "1" ]; then
             echo "::warning:: docker compose had to be installed by cicd workflow. Please check runner status"
           fi
-          if [ "${{ inputs.mkcert_installed }}" == "1" ]; then
+          if [ "${{ inputs.mkcert_installed_by_cicd }}" == "1" ]; then
             echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
           fi
       - name: Dry-run app
