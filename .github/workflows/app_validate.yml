@@ -28,7 +28,7 @@ jobs:
       steps:
         - name: Check if database is ready
           run: |
-            if docker exec db mysqladmin ping --silent; do
+            if echo > /dev/tcp/db/3306; do
               echo "Database is ready."
             else
               echo "Database is not ready"
@@ -37,10 +37,21 @@ jobs:
     check-if-wordpress-is-ready:
         runs-on: self-hosted  
         steps:
-          - name: Check if website is ready
+          - name: Check if website is ready (SSL errors expected due to mkcert used)
             uses: jtalk/url-health-check-action@v4
             with:
                 #https://github.com/marketplace/actions/url-health-check
                 url: https://localhost|https://localhost/wp-admin|https://localhost/wp-login.php
                 max-attempts: 3
                 retry-delay: 5s
+            continue-on-error: true
+          - name: Check if website is ready (ignore SSL for mkcert)
+            run: |
+              urls=("https://localhost" "https://localhost/wp-admin" "https://localhost/wp-login.php")
+              for url in "${urls[@]}"; do
+                echo "Checking $url"
+                if ! curl -k --fail --retry 3 --retry-delay 5 "$url"; then
+                  echo "Health check failed for $url"
+                  exit 1
+                fi
+              done
