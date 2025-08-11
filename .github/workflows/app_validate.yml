@@ -23,7 +23,7 @@ jobs:
               echo "One or more required containers are not running."
               exit 1
             fi
-    check-if-wordpress-is-ready:
+    check-if-website-is-available:
         runs-on: self-hosted  
         steps:
           - name: Check if website is ready (SSL errors expected due to mkcert used)
