@@ -2,25 +2,17 @@ name: Run Application
 
 on:
   workflow_call: 
-    secrets:
-      WORDPRESS_ADMIN_PASSWORD: 
-        required: true
-      WORDPRESS_DB_PASSWORD: 
-        required: true
-      MYSQL_ROOT_PASSWORD: 
-        required: true
 
 jobs:
-  start-containers-and-mount-configs:
+  start-containers-and-apply-configs:
     runs-on: self-hosted
     steps:
       - name: Start WordPress Containers
         uses: nick-fields/retry@v3
         #https://github.com/marketplace/actions/retry-step
         with:
-          timeout_minutes: 10
+          timeout_minutes: 5
           max_attempts: 3
-          retry_on: error
           command: |
             WORDPRESS_SITE_TITLE="${{ vars.WORDPRESS_SITE_TITLE }}" \
             WORDPRESS_ADMIN_USER="${{ vars.WORDPRESS_ADMIN_USER }}" \
@@ -31,13 +23,12 @@ jobs:
             WORDPRESS_DB_PASSWORD="${{ secrets.WORDPRESS_DB_PASSWORD }}" \
             MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}" \
             docker compose -f webapp/docker-compose.yml up -d
-      - name: Move Nginx configuration files to proper directory after container started
-        # This step is necessary to the server to handle HTTPS using mkcert.
+      - name: Move Nginx configuration files
         run: |
           docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
           docker exec https /bin/bash -c "service nginx reload"
   configure-wordpress:
-    needs: start-containers-and-mount-configs
+    needs: start-containers-and-apply-configs
     uses: ./.github/workflows/app_configure_wordpress.yml
     secrets:
       WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}

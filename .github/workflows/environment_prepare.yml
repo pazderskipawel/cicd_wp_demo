@@ -2,55 +2,84 @@ name: Prepare Environment
 
 on:
   workflow_call: 
-    secrets:
-      WORDPRESS_ADMIN_PASSWORD: 
-        required: true
-      WORDPRESS_DB_PASSWORD: 
-        required: true
-      MYSQL_ROOT_PASSWORD: 
-        required: true
-      RUNNER_SUDO_PASSWD: 
-        required: true
+    outputs:
+      docker_installed_by_cicd: 
+        description: 'Indicates if Docker was installed (1 for yes, 0 for no)'
+        value: ${{ jobs.check-out-environment.outputs.docker_installed_by_cicd }}
+      docker_compose_installed_by_cicd: 
+        description: 'Indicates if Docker Compose was installed (1 for yes, 0 for no)'
+        value: ${{ jobs.check-out-environment.outputs.docker_compose_installed_by_cicd }}
+      mkcert_installed_by_cicd: 
+        description: 'Indicates if mkcert was installed (1 for yes, 0 for no)'
+        value: ${{ jobs.check-out-environment.outputs.mkcert_installed_by_cicd }}
   
 jobs:
   check-out-environment:
     runs-on: self-hosted
+    outputs:
+      docker_installed_by_cicd: ${{ steps.install-components.outputs.docker_installed }}
+      docker_compose_installed_by_cicd: ${{ steps.install-components.outputs.docker_compose_installed }}
+      mkcert_installed_by_cicd: ${{ steps.install-components.outputs.mkcert_installed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
-      - name: Check and Install Docker & Docker Compose
+      - name: Check if components are installed
+        id: check-components
         run: |
           if ! command -v docker &> /dev/null; then
-            echo "Docker is not installed. Installing Docker..."
-            curl -fsSL https://get.docker.com -o get-docker.sh
-            sudo sh get-docker.sh
-            sudo usermod -aG docker $USER
+            echo "Docker is not installed." 
+            echo "is_docker_installed=0" >> $GITHUB_OUTPUT
           else
             echo "Docker is already installed."
+            echo "is_docker_installed=1" >> $GITHUB_OUTPUT
           fi
           if ! docker compose version &> /dev/null; then
-            echo "Docker Compose is not installed. Installing Compose..."
+            echo "Docker Compose is not installed."
+            echo "is_docker_compose_installed=0" >> $GITHUB_OUTPUT
+          else
+            echo "Docker Compose is already installed."
+            echo is_"docker_compose_installed=1" >> $GITHUB_OUTPUT
+          fi
+          if ! command -v mkcert &> /dev/null; then
+            echo "mkcert is not installed."
+            echo "is_mkcert_installed=0" >> $GITHUB_OUTPUT
+          else 
+            echo "mkcert is already installed."
+            echo "is_mkcert_installed=1" >> $GITHUB_OUTPUT     
+          fi
+      - name: Install components if not installed
+        if: steps.check-components.outputs.is_docker_installed == '0' || steps.check-components.outputs.is_docker_compose_installed == '0' || steps.check-components.outputs.is_mkcert_installed == '0'
+        id: install-components
+        run: |
+          if [ "${{ steps.check-components.outputs.is_docker_installed }}" == "0" ]; then
+            echo "Installing Docker..."
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y docker.io
+            sudo systemctl enable --now docker
+            # curl -fsSL https://get.docker.com -o get-docker.sh
+            # sudo sh get-docker.sh
+            # sudo usermod -aG docker $USER
+            echo "docker_installed=1" >> $GITHUB_OUTPUT
+          fi
+          if [ "${{ steps.check-components.outputs.is_docker_compose_installed }}" == "0" ]; then
+            echo "Installing Docker Compose..."
             DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
             mkdir -p $DOCKER_CONFIG/cli-plugins
             curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
             chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-          else
-            echo "Docker Compose is already installed."
+            echo "docker_compose_installed=1" >> $GITHUB_OUTPUT
           fi
-      - name: Prepare bind mount directories
-        run: |
-          export DIRS="webapp/backups"
-          mkdir -p $DIRS
-          chown ${{ vars.OS_USERNAME }}:${{ vars.OS_USERGROUP }} $DIRS
+          if [ "${{ steps.check-components.outputs.is_mkcert_installed }}" == "0" ]; then
+            echo "Installing mkcert..."
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
+            echo "mkcert_installed=1" >> $GITHUB_OUTPUT
+          fi
       - name: Create https certificates if not exist
         run: | 
           if [ ! -f ./localhost.pem ] || [ ! -f ./localhost-key.pem ]; then
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S  mkcert -install
             echo "Creating certificates..."
-            if ! command -v mkcert &> /dev/null; then
-              echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
-              echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
-              mkcert -install
-            fi
             mkcert localhost
             mv *.pem ./webapp/nginx-config/
           else

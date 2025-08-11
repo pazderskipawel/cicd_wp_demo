@@ -63,7 +63,3 @@ jobs:
   validate-app:
     if: github.event.inputs.validate_app == 'true'
     uses: ./.github/workflows/app_validate.yml
-    secrets:
-      WORDPRESS_ADMIN_PASSWORD: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }}
-      WORDPRESS_DB_PASSWORD: ${{ secrets.WORDPRESS_DB_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
