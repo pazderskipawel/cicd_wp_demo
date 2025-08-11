@@ -25,18 +25,11 @@ This repository sets up Docker containers for WordPress and MySQL using `docker-
   4. Validate app
       1. Checks if containers are working
       2. Checks if website is available
-  5. Planned changes 
-      1. Move all previous steps to github hosted runner
-      2. Creates artifact
-      3. Stops containers
-      4. (self-hosted) Clean up last environment
-      5. (self-hosted) Prepares environment
-      6. (self-hosted) Downloads artifact
-      7. (self-hosted) Runs app
+  5. Stop app if anything is not working properly
   6. Send notifications when build failed or was skipped
 ### Maintenance workflow - activated manually, allows to choose which jobs from below list should be started
   1. List installed wordpress plugins
-  2. List repository secrets
+  2. Lists wordpress variables
   3. Docker images cleanup
   4. Configure wordpress
   5. Perform app validation
