@@ -28,7 +28,7 @@ jobs:
       steps:
         - name: Check if database is ready
           run: |
-            if echo > /dev/tcp/db/3306; do
+            if echo > /dev/tcp/db/3306; then
               echo "Database is ready."
             else
               echo "Database is not ready"
