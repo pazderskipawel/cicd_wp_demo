@@ -33,13 +33,6 @@ jobs:
     uses: ./.github/workflows/app_validate.yml
     secrets:
       inherit
-  
-  #TODO create artifact with app #58
- 
-  #stop-app:
-  #  if: github.ref_name != 'main'
-  #  needs: run-app
-  #  uses: ./.github/workflows/environment_docker_cleanup.yml
 
   notify-if-any-step-fails:
     needs: [prepare-environment, validate-app, run-app]
@@ -47,3 +40,10 @@ jobs:
     uses: ./.github/workflows/notification_discord.yml
     secrets:
       inherit
+
+  #TODO create artifact with app #58
+ 
+  #stop-app:
+  #  if: github.ref_name != 'main'
+  #  needs: run-app
+  #  uses: ./.github/workflows/environment_docker_cleanup.yml

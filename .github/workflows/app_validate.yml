@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-    check-if-containers-are-running:
+    check-environment:
       runs-on: self-hosted
       steps:
         - name: Check if containers are running
@@ -23,9 +23,6 @@ jobs:
               echo "One or more required containers are not running."
               exit 1
             fi
-    check-if-ssl-certificate-is-valid:
-      runs-on: self-hosted
-      steps:
         - name: Check if SSL certificate is valid (modified for mkcert)
           run: |
             if ! openssl s_client -connect localhost:443 -servername localhost | grep -q 'subject=O = mkcert development certificate'; then
@@ -35,9 +32,6 @@ jobs:
               echo "SSL certificate is valid."
             fi
           continue-on-error: true
-    check-if-database-is-ready:
-      runs-on: self-hosted
-      steps:
         - name: Check if database is ready
           run: |
             if ! docker exec db mysqladmin ping -h localhost -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" --silent; then
@@ -53,7 +47,7 @@ jobs:
         #      <h1>Error establishing a database connection</h1>
         #    </div>
 	      #  </body>
-    check-if-website-is-available:
+    check-website:
         runs-on: self-hosted  
         steps:
           - name: Check if website is ready (SSL errors expected due to mkcert used)
