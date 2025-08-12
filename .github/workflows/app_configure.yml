@@ -3,7 +3,7 @@ on:
   workflow_call:
 
 jobs:
-  move-nginx-config:
+  configure-nginx:
     runs-on: self-hosted
     steps:
       - name: Create https certificates if not exist
