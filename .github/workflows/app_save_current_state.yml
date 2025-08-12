@@ -1,6 +1,17 @@
 name: Save current wordpress state as artifacts (Manual trigger)
 on:
   workflow_dispatch:
+    inputs: 
+      create-artifact:
+        description: 'Create artifact with current state'
+        required: false
+        default: true
+        type: boolean
+      cleanup-directory:
+        description: 'Cleanup backup directory'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   save-current-state:
@@ -28,9 +39,16 @@ jobs:
             wordpress > ./wp-backup/wordpress.sql
             
       - name: Upload backup as artifact
+        if: github.event.inputs.create-artifact == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: wordpress-backup
           path: ./wp-backup/
           retention-days: 30
           compression-level: 9
+      
+      - name: Clean up backup directory
+        if: github.event.inputs.cleanup-directory == 'true'
+        run: |
+          echo "Cleaning up backup directory"
+          rm -rf ./wp-backup/
