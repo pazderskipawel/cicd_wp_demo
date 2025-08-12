@@ -1,10 +1,10 @@
-name: App Test
+name: App Vaidation
 
 on:
   workflow_call:
 
 jobs:
-  check-environment:
+  validate-containers:
     runs-on: self-hosted
     steps:
       - name: Check if containers are running
@@ -23,6 +23,10 @@ jobs:
             echo "One or more required containers are not running."
             exit 1
           fi
+  validate-ssl:
+    needs: validate-containers
+    runs-on: self-hosted
+    steps:
       - name: Check if SSL certificate is valid (modified for mkcert)
         run: |
           if ! openssl s_client -connect localhost:443 -servername localhost | grep -q 'subject=O = mkcert development certificate'; then
@@ -31,7 +35,10 @@ jobs:
           else
             echo "SSL certificate is valid."
           fi
-        continue-on-error: true
+  validate-database:
+    needs: validate-containers
+    runs-on: self-hosted
+    steps:
       - name: Check if database is ready
         run: |
           if ! docker exec db mysqladmin ping -h localhost -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" --silent; then
@@ -40,15 +47,14 @@ jobs:
           else
             echo "Database is ready."
           fi
-        continue-on-error: true
         #  Add action which checks this site status to confirm if database is ready
         #  <body id="error-page">
 	      #    <div class="wp-die-message">
         #      <h1>Error establishing a database connection</h1>
         #    </div>
 	      #  </body>
-  check-website:
-    needs: check-environment
+  validate-website:
+    needs: [validate-containers, validate-database, validate-ssl]
     runs-on: self-hosted  
     steps:
       - name: Check if website is ready (SSL errors expected due to mkcert used)
