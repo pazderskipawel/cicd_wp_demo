@@ -6,9 +6,20 @@ jobs:
   move-nginx-config:
     runs-on: self-hosted
     steps:
+      - name: Create https certificates if not exist
+        run: | 
+          if [ ! -f ./localhost.pem ] || [ ! -f ./localhost-key.pem ]; then
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S  mkcert -install
+            echo "Creating certificates..."
+            mkcert localhost
+          else
+            echo "Certificates already exist."
+          fi
       - name: Move Nginx configuration files
         run: |
-          docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
+          docker cp localhost.pem https:/etc/nginx/localhost.pem
+          docker cp localhost-key.pem https:/etc/nginx/localhost-key.pem
+          docker cp ./webapp/nginx-config/default.conf https:/etc/nginx/default.conf
           docker exec https /bin/bash -c "service nginx reload"
   configure-wordpress:
     runs-on: self-hosted
