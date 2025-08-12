@@ -17,13 +17,12 @@ jobs:
     uses: ./.github/workflows/environment_docker_cleanup.yml
     
   prepare-environment:
-    needs: clean-up-last-build
     uses: ./.github/workflows/environment_prepare.yml
     secrets: 
       inherit
 
   start-app:
-    needs: prepare-environment
+    needs: [clean-up-last-build, prepare-environment]
     uses:  ./.github/workflows/app_run.yml
     secrets:
       inherit
