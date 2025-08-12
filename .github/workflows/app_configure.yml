@@ -1,8 +1,26 @@
-name: WordPress Configuration
+name: App Configuration
 on:
   workflow_call:
 
 jobs:
+  configure-nginx:
+    runs-on: self-hosted
+    steps:
+      - name: Create https certificates if not exist
+        run: | 
+          if [ ! -f ./localhost.pem ] || [ ! -f ./localhost-key.pem ]; then
+            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S  mkcert -install
+            echo "Creating certificates..."
+            mkcert localhost
+          else
+            echo "Certificates already exist."
+          fi
+      - name: Move Nginx configuration files
+        run: |
+          docker cp localhost.pem https:/etc/nginx/conf.d/localhost.pem
+          docker cp localhost-key.pem https:/etc/nginx/conf.d/localhost-key.pem
+          docker cp ./webapp/nginx-config/default.conf https:/etc/nginx/conf.d/default.conf
+          docker exec https /bin/bash -c "service nginx reload"
   configure-wordpress:
     runs-on: self-hosted
     steps:

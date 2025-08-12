@@ -1,46 +1,76 @@
-name: App Test
+name: App Vaidation
 
 on:
   workflow_call:
 
 jobs:
-    check-if-containers-are-running:
-      runs-on: self-hosted
-      steps:
-        - name: Check if containers are running
-          run: |
-            required_containers=(db wordpress https)
-            missing=0
-            for c in "${required_containers[@]}"; do
-              if ! docker ps --format '{{.Names}}' | grep -qw "$c"; then
-                echo "Container $c is NOT running."
-                missing=1
-              else
-                echo "Container $c is running."
-              fi
-            done
-            if [ "$missing" -eq 1 ]; then
-              echo "One or more required containers are not running."
+  validate-containers:
+    runs-on: self-hosted
+    steps:
+      - name: Check if containers are running
+        run: |
+          required_containers=(db wordpress https)
+          missing=0
+          for c in "${required_containers[@]}"; do
+            if ! docker ps --format '{{.Names}}' | grep -qw "$c"; then
+              echo "Container $c is NOT running."
+              missing=1
+            else
+              echo "Container $c is running."
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required containers are not running."
+            exit 1
+          fi
+  validate-ssl:
+    needs: validate-containers
+    runs-on: self-hosted
+    steps:
+      - name: Check if SSL certificate is valid (modified for mkcert)
+        run: |
+          if openssl s_client -connect localhost:443 -servername localhost < /dev/null 2>/dev/null | grep -q 'O = mkcert development certificate'; then
+            echo "SSL certificate is valid."
+          else
+            echo "SSL certificate is NOT valid."
+            exit 1
+          fi
+  validate-database:
+    needs: validate-containers
+    runs-on: self-hosted
+    steps:
+      - name: Check if database is ready
+        run: |
+          if ! docker exec db mysqladmin ping -h localhost -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" --silent; then
+            echo "Database is NOT ready."
+            exit 1
+          else
+            echo "Database is ready."
+          fi
+        #  Add action which checks this site status to confirm if database is ready
+        #  <body id="error-page">
+	      #    <div class="wp-die-message">
+        #      <h1>Error establishing a database connection</h1>
+        #    </div>
+	      #  </body>
+  validate-website:
+    needs: [validate-containers, validate-database, validate-ssl]
+    runs-on: self-hosted  
+    steps:
+      - name: Check if website is ready (SSL errors expected due to mkcert used)
+        uses: jtalk/url-health-check-action@v4
+        with:
+            #https://github.com/marketplace/actions/url-health-check
+          url: https://localhost|https://localhost/wp-admin|https://localhost/wp-login.php
+          max-attempts: 3
+          retry-delay: 5s
+        continue-on-error: true
+      - name: Check if website is ready (ignore SSL for mkcert)
+        run: |
+          urls=("https://localhost" "https://localhost/wp-admin" "https://localhost/wp-login.php")
+          for url in "${urls[@]}"; do
+            if ! curl -k --fail --retry 3 --retry-delay 5 "$url"; then
+              echo "Health check failed for $url"
               exit 1
             fi
-    check-if-website-is-available:
-        runs-on: self-hosted  
-        steps:
-          - name: Check if website is ready (SSL errors expected due to mkcert used)
-            uses: jtalk/url-health-check-action@v4
-            with:
-                #https://github.com/marketplace/actions/url-health-check
-                url: https://localhost|https://localhost/wp-admin|https://localhost/wp-login.php
-                max-attempts: 3
-                retry-delay: 5s
-            continue-on-error: true
-          - name: Check if website is ready (ignore SSL for mkcert)
-            run: |
-              urls=("https://localhost" "https://localhost/wp-admin" "https://localhost/wp-login.php")
-              for url in "${urls[@]}"; do
-                echo "Checking $url"
-                if ! curl -k --fail --retry 3 --retry-delay 5 "$url"; then
-                  echo "Health check failed for $url"
-                  exit 1
-                fi
-              done
+          done

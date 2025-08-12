@@ -1,0 +1,30 @@
+name: Restore latest saved wordpress state from artifacts (Manual trigger)
+on:
+  workflow_dispatch:
+
+jobs:
+  restore-wordpress-state:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  
+      - name: Create restore directory - temporary for testing
+        run: |
+          echo "Creating restore directory"
+          mkdir -p ./wp-restored
+      - name: Download latest backup artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: wordpress-backup
+          path : ./wp-restored/
+      - name: check if wp-restored and wp-backup directories contains same files
+        run: |
+          echo "Checking if wp-restored and wp-backup directories contain the same files"
+          if diff -qr ./wp-restored/wp-backup ./wp-backup; then
+            echo "Directories are identical"
+            echo "No need to restore, exiting"
+            exit 1
+          else
+            echo "Directories differ, proceeding with restore"
+          fi
+          

@@ -17,33 +17,38 @@ jobs:
     uses: ./.github/workflows/environment_docker_cleanup.yml
     
   prepare-environment:
-    needs: clean-up-last-build
     uses: ./.github/workflows/environment_prepare.yml
     secrets: 
       inherit
 
-  run-app:
-    needs: prepare-environment
+  start-app:
+    needs: [clean-up-last-build, prepare-environment]
     uses:  ./.github/workflows/app_run.yml
+    secrets:
+      inherit
+  
+  configure-app:
+    needs: start-app
+    uses: ./.github/workflows/app_configure.yml
     secrets:
       inherit
 
   validate-app:
-    needs: run-app
+    needs: configure-app
     uses: ./.github/workflows/app_validate.yml
     secrets:
       inherit
-  
+
+  notify-if-any-step-fails:
+    needs: [prepare-environment, validate-app, start-app, configure-app]
+    if: failure() || cancelled()
+    uses: ./.github/workflows/notification_discord.yml
+    secrets:
+      inherit
+
   #TODO create artifact with app #58
  
   #stop-app:
   #  if: github.ref_name != 'main'
   #  needs: run-app
   #  uses: ./.github/workflows/environment_docker_cleanup.yml
-
-  notify-if-any-step-fails:
-    needs: [prepare-environment, validate-app, run-app]
-    if: failure() || cancelled()
-    uses: ./.github/workflows/notification_discord.yml
-    secrets:
-      inherit

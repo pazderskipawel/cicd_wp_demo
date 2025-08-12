@@ -4,11 +4,15 @@ on:
   workflow_call: 
   
 jobs:
-  check-out-environment:
+  checkout-code:
     runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
+  check-and-install-components:
+    runs-on: self-hosted
+    needs: checkout-code
+    steps:
       - name: Check if components are installed
         id: check-components
         run: |
@@ -60,14 +64,4 @@ jobs:
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
             echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
-          fi
-      - name: Create https certificates if not exist
-        run: | 
-          if [ ! -f ./localhost.pem ] || [ ! -f ./localhost-key.pem ]; then
-            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S  mkcert -install
-            echo "Creating certificates..."
-            mkcert localhost
-            mv *.pem ./webapp/nginx-config/
-          else
-            echo "Certificates already exist."
           fi
