@@ -1,8 +1,15 @@
-name: WordPress Configuration
+name: App Configuration
 on:
   workflow_call:
 
 jobs:
+  move-nginx-config:
+    runs-on: self-hosted
+    steps:
+      - name: Move Nginx configuration files
+        run: |
+          docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
+          docker exec https /bin/bash -c "service nginx reload"
   configure-wordpress:
     runs-on: self-hosted
     steps:

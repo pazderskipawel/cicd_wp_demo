@@ -4,7 +4,7 @@ on:
   workflow_call: 
 
 jobs:
-  start-containers-and-apply-configs:
+  start-containers:
     runs-on: self-hosted
     steps:
       - name: Start WordPress Containers
@@ -23,10 +23,3 @@ jobs:
             WORDPRESS_DB_PASSWORD="${{ secrets.WORDPRESS_DB_PASSWORD }}" \
             MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}" \
             docker compose -f webapp/docker-compose.yml up -d
-      - name: Move Nginx configuration files
-        run: |
-          docker exec https /bin/bash -c "mv /etc/nginx/nginx-config/*.conf /etc/nginx/conf.d/"
-          docker exec https /bin/bash -c "service nginx reload"
-  configure-wordpress:
-    needs: start-containers-and-apply-configs
-    uses: ./.github/workflows/app_configure_wordpress.yml

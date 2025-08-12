@@ -22,20 +22,26 @@ jobs:
     secrets: 
       inherit
 
-  run-app:
+  start-app:
     needs: prepare-environment
     uses:  ./.github/workflows/app_run.yml
     secrets:
       inherit
+  
+  configure-app:
+    needs: start-app
+    uses: ./.github/workflows/app_configure.yml
+    secrets:
+      inherit
 
   validate-app:
-    needs: run-app
+    needs: configure-app
     uses: ./.github/workflows/app_validate.yml
     secrets:
       inherit
 
   notify-if-any-step-fails:
-    needs: [prepare-environment, validate-app, run-app]
+    needs: [prepare-environment, validate-app, start-app, configure-app]
     if: failure() || cancelled()
     uses: ./.github/workflows/notification_discord.yml
     secrets:
