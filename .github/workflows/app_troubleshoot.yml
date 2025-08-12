@@ -18,8 +18,8 @@ on:
         required: false
         default: true
         type: boolean
-      configure_wordpress:
-        description: 'Configure WordPress'
+      configure_app:
+        description: 'Configure application'
         required: false
         default: true
         type: boolean
@@ -55,9 +55,9 @@ jobs:
   cleanup-docker:
     if: github.event.inputs.cleanup_docker == 'true'
     uses: ./.github/workflows/environment_docker_cleanup.yml
-  configure-wordpress:
-    if: github.event.inputs.configure_wordpress == 'true'
-    uses: ./.github/workflows/app_configure_wordpress.yml
+  configure-app:
+    if: github.event.inputs.configure_app == 'true'
+    uses: ./.github/workflows/app_configure.yml
   validate-app:
     if: github.event.inputs.validate_app == 'true'
     uses: ./.github/workflows/app_validate.yml

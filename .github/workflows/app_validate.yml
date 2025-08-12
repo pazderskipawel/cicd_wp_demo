@@ -29,11 +29,11 @@ jobs:
     steps:
       - name: Check if SSL certificate is valid (modified for mkcert)
         run: |
-          if ! openssl s_client -connect localhost:443 -servername localhost | grep -q 'subject=O = mkcert development certificate'; then
+          if openssl s_client -connect localhost:443 -servername localhost < /dev/null 2>/dev/null | grep -q 'O = mkcert development certificate'; then
+            echo "SSL certificate is valid."
+          else
             echo "SSL certificate is NOT valid."
             exit 1
-          else
-            echo "SSL certificate is valid."
           fi
   validate-database:
     needs: validate-containers
