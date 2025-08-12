@@ -21,7 +21,6 @@ services:
   db:
     image: mysql:8.0
     container_name: db
-    restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
       MYSQL_USER: ${WORDPRESS_DB_USER}

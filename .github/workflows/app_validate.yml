@@ -26,9 +26,9 @@ jobs:
     check-if-ssl-certificate-is-valid:
       runs-on: self-hosted
       steps:
-        - name: Check if SSL certificate is valid
+        - name: Check if SSL certificate is valid (it may not work for mkcert)
           run: |
-            if ! openssl s_client -connect localhost:443 -servername localhost </dev/null 2>/dev/null | grep -q 'Verify return code: 0 (ok)'; then
+            if ! docker exec https openssl s_client -connect localhost:443 -servername localhost </dev/null 2>/dev/null | grep -q 'Verify return code: 0 (ok)'; then
               echo "SSL certificate is NOT valid."
               exit 1
             else
