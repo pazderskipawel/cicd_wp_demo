@@ -1,4 +1,4 @@
-name: Troubleshoot WordPress Application
+name: Troubleshoot WordPress Application (Manual trigger) 
 
 on:
   workflow_dispatch:
