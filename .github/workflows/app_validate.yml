@@ -23,6 +23,36 @@ jobs:
               echo "One or more required containers are not running."
               exit 1
             fi
+    check-if-ssl-certificate-is-valid:
+      runs-on: self-hosted
+      steps:
+        - name: Check if SSL certificate is valid
+          run: |
+            if ! openssl s_client -connect localhost:443 -servername localhost </dev/null 2>/dev/null | grep -q 'Verify return code: 0 (ok)'; then
+              echo "SSL certificate is NOT valid."
+              exit 1
+            else
+              echo "SSL certificate is valid."
+            fi
+          continue-on-error: true
+    check-if-database-is-ready:
+      runs-on: self-hosted
+      steps:
+        - name: Check if database is ready
+          run: |
+            if ! docker exec db mysqladmin ping -h localhost -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" --silent; then
+              echo "Database is NOT ready."
+              exit 1
+            else
+              echo "Database is ready."
+            fi
+          continue-on-error: true
+        #  Add action which checks this site status to confirm if database is ready
+        #  <body id="error-page">
+	      #    <div class="wp-die-message">
+        #      <h1>Error establishing a database connection</h1>
+        #    </div>
+	      #  </body>
     check-if-website-is-available:
         runs-on: self-hosted  
         steps:
