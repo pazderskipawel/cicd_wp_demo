@@ -39,15 +39,15 @@ Repo uses `reusable workflows` so all actions are clear and reusable if needed. 
   5. Perform app validation
 ### Save Wordpress state workflow (Back up Wordress) - activted manually
   1. Create directory for backup
-  2. Copy WP files from `wordpress` container
-  2. Create db dump from `db` container
-  3. Upload backup as artifact (optional)
-  4. Delete backup directory
+  2. Copy WP files from container
+  2. Create db dump from container
+  3. Upload backup as `artifact` (optional)
+  4. Delete backup directory (optional)
 ### Restore Wordpress backup workflow - activated manually (planned to be part of main workflow)
   1. Create directory for restored backup (temporary)
   2. Find last successfull build id
   3. Download artifact from that run
   4. Check if data in backup folder matches data in restored folder
-  5. TODO Upload restored backup to containers
+  5. `TODO` Upload restored backup to containers
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 
