@@ -1,4 +1,4 @@
-name: Main Pipeline
+name: Main Pipeline - Deploys Wordpress Application
 
 on:
   push:

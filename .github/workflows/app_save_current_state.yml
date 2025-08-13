@@ -21,12 +21,10 @@ jobs:
         run: |
           echo "Creating backup directory"
           mkdir -p ./wp-backup
-          
       - name: Copy WordPress files from container
         run: |
           echo "Copying WordPress files"
           docker cp wordpress:/var/www/html/. ./wp-backup/
-          
       - name: Create database dump
         run: |
           echo "Creating database dump"
@@ -37,7 +35,6 @@ jobs:
             --routines \
             --triggers \
             wordpress > ./wp-backup/wordpress.sql
-            
       - name: Upload backup as artifact
         if: github.event.inputs.create-artifact == 'true'
         uses: actions/upload-artifact@v4
@@ -46,7 +43,6 @@ jobs:
           path: ./wp-backup/
           retention-days: 30
           compression-level: 9
-      
       - name: Clean up backup directory
         if: github.event.inputs.cleanup-directory == 'true'
         run: |
