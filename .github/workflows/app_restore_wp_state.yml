@@ -28,11 +28,11 @@ jobs:
       - name: check if wp-restored and wp-backup directories contains same files
         run: |
           echo "Checking if wp-restored and wp-backup directories contain the same files"
-          if diff -qr ./wp-restored/wp-backup ./wp-backup; then
+          if diff -qr ./wp-restored ./wp-backup; then
             echo "Directories are identical"
             echo "No need to restore, exiting"
             exit 1
           else
-            echo "Directories differ, proceeding with restore"
+            echo "::warning:: Directories differ, proceeding with restore"
           fi
           
