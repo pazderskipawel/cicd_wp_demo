@@ -8,8 +8,8 @@ jobs:
     steps: 
       - name: Install GitHub CLI and jq
         run: |
-          echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo apt-get update
-          echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo apt-get install -y gh jq
+          echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update
+          echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y gh jq
       - name: Create restore directory - temporary for testing
         run: |
           echo "Creating restore directory"
