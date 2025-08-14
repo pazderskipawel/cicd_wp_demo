@@ -1,7 +1,6 @@
 name: Restore latest saved wordpress state from artifacts (Manual trigger)
 on:
   workflow_dispatch:
-
 jobs:
   restore-wordpress-state:
     runs-on: self-hosted
@@ -17,13 +16,15 @@ jobs:
       - name: Find last successful run of saving state workflow
         id: get_run
         run: |
-          run_id=$(gh run list --workflow app_save_current_state.yml --status success --limit 1 --json id | jq -r '.[0].id')
+          run_id=$(gh run list --workflow app_save_current_state.yml --status success --limit 1 --json databaseId | jq -r '.[0].databaseId')
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download artifact from last successful run
         run: |
           gh run download ${{ steps.get_run.outputs.run_id }} -n wordpress-backup -D ./wp-restored/
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: check if wp-restored and wp-backup directories contains same files
         run: |
           echo "Checking if wp-restored and wp-backup directories contain the same files"
