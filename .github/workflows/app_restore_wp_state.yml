@@ -19,6 +19,8 @@ jobs:
         run: |
           run_id=$(gh run list --workflow app_save_current_state.yml --status success --limit 1 --json id | jq -r '.[0].id')
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download artifact from last successful run
         run: |
           gh run download ${{ steps.get_run.outputs.run_id }} -n wordpress-backup -D ./wp-restored/
