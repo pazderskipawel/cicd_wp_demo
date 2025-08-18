@@ -4,8 +4,9 @@ on:
     inputs:
       check_if_identical:
         description: 'Check if restored state is identical to backup'
-        required: true
-        default: 'true'
+        required: false
+        default: true
+        type: boolean
 jobs:
   restore-wordpress-state:
     runs-on: self-hosted
@@ -57,3 +58,12 @@ jobs:
           else
             echo "::warning:: Directories differ, proceeding with restore"
           fi
+  restore-wordpress-state-from-backup:
+    runs-on: self-hosted
+    needs: [restore-wordpress-state, check-if-restored-and-backup-are-identical]
+    steps:
+      - name: Restore WordPress state from backup
+        run: |
+          echo "Restoring WordPress state from backup"
+          docker cp ./wp-restored/. wordpress:/var/www/html/
+          echo "WordPress state restored successfully from backup"

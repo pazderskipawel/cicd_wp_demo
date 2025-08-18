@@ -14,7 +14,7 @@ on:
         type: boolean
 
 jobs:
-  save-current-state:
+  create-backups:
     runs-on: self-hosted
     steps:
       - name: Create backup directory
@@ -35,16 +35,50 @@ jobs:
             --routines \
             --triggers \
             wordpress > ./wp-backup/wordpress.sql
+  upload-backup-as-artifact:
+    runs-on: self-hosted 
+    needs: create-backups
+    if: github.event.inputs.create-artifact == 'true'
+    steps:
       - name: Upload backup as artifact
-        if: github.event.inputs.create-artifact == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: wordpress-backup
           path: ./wp-backup/
           retention-days: 30
           compression-level: 9
+  remove-backup-directory:
+    runs-on: self-hosted
+    needs: create-backups
+    if: github.event.inputs.cleanup-directory == 'true' 
+    steps:
       - name: Clean up backup directory
         if: github.event.inputs.cleanup-directory == 'true'
         run: |
           echo "Cleaning up backup directory"
           rm -rf ./wp-backup/
+  remove-oldest-artifact:
+    runs-on: self-hosted
+    needs: upload-backup-as-artifact
+    steps:
+      - name: Remove oldest artifacts, keep newest 3
+        run: |
+          # List all artifacts for this workflow, sorted by creation date (oldest first)
+          artifact_ids=$(gh api repos/${{ github.repository }}/actions/artifacts \
+            --jq '.artifacts | sort_by(.created_at) | .[].id')
+          # Count total artifacts
+          total=$(echo "$artifact_ids" | wc -l)
+          # Calculate how many to delete
+          to_delete=$((total - 3))
+          if [ "$to_delete" -gt 0 ]; then
+            # Get IDs of artifacts to delete
+            ids_to_delete=$(echo "$artifact_ids" | head -n "$to_delete")
+            for id in $ids_to_delete; do
+              echo "Deleting artifact $id"
+              gh api --method DELETE repos/${{ github.repository }}/actions/artifacts/$id
+            done
+          else
+            echo "No old artifacts to delete."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
