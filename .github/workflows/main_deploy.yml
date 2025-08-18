@@ -12,27 +12,29 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true 
 
-jobs:
-  clean-up-last-build:
-    uses: ./.github/workflows/environment_docker_cleanup.yml
-    
+jobs:   
   prepare-environment:
     uses: ./.github/workflows/environment_prepare.yml
     secrets: 
       inherit
-
+  checkout-code:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+  clean-up-last-build:
+    needs: prepare-environment
+    uses: ./.github/workflows/environment_docker_cleanup.yml
   start-app:
     needs: [clean-up-last-build, prepare-environment]
     uses:  ./.github/workflows/app_run.yml
     secrets:
       inherit
-  
   configure-app:
     needs: start-app
     uses: ./.github/workflows/app_configure.yml
     secrets:
       inherit
-
   validate-app:
     needs: configure-app
     uses: ./.github/workflows/app_validate.yml
@@ -40,15 +42,8 @@ jobs:
       inherit
 
   notify-if-any-step-fails:
-    needs: [prepare-environment, validate-app, start-app, configure-app]
+    needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-app, configure-app]
     if: failure() || cancelled()
     uses: ./.github/workflows/notification_discord.yml
     secrets:
       inherit
-
-  #TODO create artifact with app #58
- 
-  #stop-app:
-  #  if: github.ref_name != 'main'
-  #  needs: run-app
-  #  uses: ./.github/workflows/environment_docker_cleanup.yml

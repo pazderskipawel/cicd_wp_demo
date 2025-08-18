@@ -4,14 +4,8 @@ on:
   workflow_call: 
   
 jobs:
-  checkout-code:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
   check-and-install-components:
     runs-on: self-hosted
-    needs: checkout-code
     steps:
       - name: Check if components are installed
         id: check-components
