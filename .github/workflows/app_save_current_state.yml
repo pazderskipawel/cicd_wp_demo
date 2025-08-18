@@ -2,15 +2,10 @@ name: Save current wordpress state as artifacts (Manual trigger)
 on:
   workflow_dispatch:
     inputs: 
-      create-artifact:
-        description: 'Create artifact with current state'
-        required: false
-        default: true
-        type: boolean
       cleanup-directory:
         description: 'Cleanup backup directory'
         required: false
-        default: false
+        default: true
         type: boolean
 
 jobs:
@@ -38,7 +33,6 @@ jobs:
   upload-backup-as-artifact:
     runs-on: self-hosted 
     needs: create-backups
-    if: github.event.inputs.create-artifact == 'true'
     steps:
       - name: Upload backup as artifact
         uses: actions/upload-artifact@v4

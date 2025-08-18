@@ -5,7 +5,7 @@ on:
       check_if_identical:
         description: 'Check if restored state is identical to backup'
         required: false
-        default: true
+        default: false
         type: boolean
 jobs:
   restore-wordpress-state:
