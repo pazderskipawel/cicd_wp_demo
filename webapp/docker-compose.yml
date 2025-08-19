@@ -1,8 +1,7 @@
 services:
   wordpress:
     image: wordpress:latest
-    container_name: wordpress
-    description: WordPress container
+    container_name: wordpress #WordPress container
     depends_on:
       - db
     environment:
@@ -21,8 +20,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: db
-    description: MySQL database for WordPress (Ideally use a separate database for production, on a separate server or cloud service)
+    container_name: db #MySQL database for WordPress (Ideally use a separate database for production, on a separate server or cloud service)
     environment:
       MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
       MYSQL_USER: ${WORDPRESS_DB_USER}
@@ -35,8 +33,7 @@ services:
 
   https:
     image: nginx:latest
-    container_name: https
-    description: Nginx reverse proxy for WordPress (Handles HTTPS, ideally use let's encrypt for SSL in production)
+    container_name: https #Nginx reverse proxy for WordPress (Handles HTTPS, ideally use let's encrypt for SSL in production)
     depends_on:
       - wordpress
     ports:
