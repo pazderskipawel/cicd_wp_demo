@@ -26,7 +26,7 @@ jobs:
     needs: prepare-environment
     uses: ./.github/workflows/environment_docker_cleanup.yml
   start-app:
-    needs: [clean-up-last-build, prepare-environment]
+    needs: [clean-up-last-build, checkout-code]
     uses:  ./.github/workflows/app_run.yml
     secrets:
       inherit
