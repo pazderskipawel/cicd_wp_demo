@@ -23,7 +23,7 @@ jobs:
       - name: Create database dump
         run: |
           echo "Creating database dump"
-          docker exec wordpress wp db export ./wp-backup/wordpress-database.sql
+          docker exec wordpress wp db export ./wp-backup/wordpress-database.sql --allow-root --path=/var/www/html
   upload-backup-as-artifact:
     runs-on: self-hosted 
     needs: create-backups
