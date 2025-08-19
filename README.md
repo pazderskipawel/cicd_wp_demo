@@ -48,13 +48,12 @@ Looking overall state of repo and number of commits I think this should be a `De
   2. Copy WP files from container
   2. Create db dump from container
   3. Upload backup as `artifact`
-  4. Delete backup directory (optional)
+  4. Delete backup directory
   5. Delete oldest artifacts 
 ### Restore Wordpress backup workflow - activated manually (planned to be part of main workflow)
   1. Create directory for restored backup (temporary)
   2. Find last successfull build id
   3. Download artifact from that run
-  4. Check if data in backup folder matches data in restored folder (temporary)
   5. Upload restored backup to containers
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 

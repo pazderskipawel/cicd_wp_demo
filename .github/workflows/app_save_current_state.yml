@@ -1,12 +1,6 @@
 name: Save current wordpress state as artifacts (Manual trigger)
 on:
   workflow_dispatch:
-    inputs: 
-      cleanup-directory:
-        description: 'Cleanup backup directory'
-        required: false
-        default: true
-        type: boolean
 
 jobs:
   create-backups:
@@ -38,10 +32,8 @@ jobs:
   remove-backup-directory:
     runs-on: self-hosted
     needs: create-backups
-    if: github.event.inputs.cleanup-directory == 'true' 
     steps:
       - name: Clean up backup directory
-        if: github.event.inputs.cleanup-directory == 'true'
         run: |
           echo "Cleaning up backup directory"
           rm -rf ./wp-backup/
