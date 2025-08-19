@@ -67,3 +67,8 @@ jobs:
           echo "Restoring WordPress state from backup"
           docker cp ./wp-restored/. wordpress:/var/www/html/
           echo "WordPress state restored successfully from backup"
+      - name: Restore database from backup
+        run: |
+          echo "Restoring database from backup"
+          docker exec wordpress wp db import ./wp-restored/wordpress-db.sql
+          echo "Database restored successfully from backup"
