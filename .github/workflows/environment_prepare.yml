@@ -51,11 +51,11 @@ jobs:
             mkdir -p $DOCKER_CONFIG/cli-plugins
             curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
             chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
+            echo "::warning:: docker-compose had to be installed by cicd workflow. Please check runner status"
           fi
           if [ "${{ steps.check-components.outputs.is_mkcert_installed }}" == "0" ]; then
             echo "Installing mkcert..."
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
             echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
-            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
+            echo "::warning:: mkcert had to be installed by cicd workflow. Please check runner status"
           fi
