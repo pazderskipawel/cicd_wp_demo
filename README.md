@@ -5,6 +5,8 @@ Repo uses `reusable workflows` so all actions are clear and reusable if needed. 
 ## Overview
 - Project Purpose: Dockerized WordPress + MySQL demo with CI/CD via GitHub Actions
 - Runner Type: Self-hosted Ubuntu runner
+# Disclaimer
+Looking overall state of repo and number of commits I think this should be a `Dev` or at most `Staging` environment and after merging with `main` branch there should be a CD workflow which deploys everything, makes additional validation, waits for manual approval etc. to `Production` environment. For now I don't see any reasons to do multiple environments given I have one worker.
 ## Main pipeline status
 [![CI](https://github.com/pazderskipawel/githubactions/actions/workflows/deploy_everything.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/githubactions/actions/workflows/deploy_everything.yml?query=branch%3Amain)
 ## Getting Started
@@ -48,7 +50,7 @@ Repo uses `reusable workflows` so all actions are clear and reusable if needed. 
   1. Create directory for restored backup (temporary)
   2. Find last successfull build id
   3. Download artifact from that run
-  4. Check if data in backup folder matches data in restored folder (temporary?)
+  4. Check if data in backup folder matches data in restored folder (temporary)
   5. Upload restored backup to containers
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 
