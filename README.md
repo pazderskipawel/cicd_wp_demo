@@ -5,8 +5,12 @@ Repo uses `reusable workflows` so all actions are clear and reusable if needed. 
 ## Overview
 - Project Purpose: Dockerized WordPress + MySQL demo with CI/CD via GitHub Actions
 - Runner Type: Self-hosted Ubuntu runner
+- CICD is responsible for all configurations
+- docker-compose statring containers with WordPress, MySQL, nginx reverse rpoxy for SSL
 # Disclaimer
 Looking overall state of repo and number of commits I think this should be a `Dev` or at most `Staging` environment and after merging with `main` branch there should be a CD workflow which deploys everything, makes additional validation, waits for manual approval etc. to `Production` environment. For now I don't see any reasons to do multiple environments given I have one worker.
+- ideally database shoud be on diffrent server or in cloud service
+- ideally for SSL it should use let's encrypt or similar service instead of mkcert
 ## Main pipeline status
 [![CI](https://github.com/pazderskipawel/githubactions/actions/workflows/deploy_everything.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/githubactions/actions/workflows/deploy_everything.yml?query=branch%3Amain)
 ## Getting Started

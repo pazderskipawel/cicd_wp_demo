@@ -23,13 +23,7 @@ jobs:
       - name: Create database dump
         run: |
           echo "Creating database dump"
-          docker exec db mysqldump \
-            -u root \
-            --password="${{ secrets.MYSQL_ROOT_PASSWORD }}" \
-            --single-transaction \
-            --routines \
-            --triggers \
-            wordpress > ./wp-backup/wordpress.sql
+          docker exec wordpress wp db export ./wp-backup/wordpress-database.sql
   upload-backup-as-artifact:
     runs-on: self-hosted 
     needs: create-backups
