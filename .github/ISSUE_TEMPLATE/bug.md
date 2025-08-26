@@ -1,8 +1,8 @@
 ---
 name: Bug
 about: Create a report to help us improve
-title: "[BUG] Title"
-labels: bug, enhancement
+title: "[Bug] Title"
+labels: main
 assignees: pazderskipawel
 
 ---

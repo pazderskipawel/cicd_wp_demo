@@ -1,26 +1,21 @@
-name: Save current wordpress state as artifacts (Manual trigger)
+name: Save current wordpress state as artifacts (triggered by script on runner)
 on:
   workflow_dispatch:
 
 jobs:
-  create-backups:
+  check-if-backup-folder-exists:
     runs-on: self-hosted
     steps:
-      - name: Create backup directory
+      - name: Check if backup folder exists
         run: |
-          echo "Creating backup directory"
-          mkdir -p ./wp-backup
-      - name: Copy WordPress files from container
-        run: |
-          echo "Copying WordPress files"
-          docker cp wordpress:/var/www/html/. ./wp-backup/
-      - name: Create database dump
-        run: |
-          echo "Creating database dump"
-          docker exec wordpress wp db export ./wp-backup/wordpress-database.sql --allow-root --path=/var/www/html
+          if [ ! -d "./wp-backup/" ]; then
+            echo "Backup directory does not exist. Exiting."
+            exit 1
+          else
+            echo "Backup directory exists. Proceeding..."
+          fi
   upload-backup-as-artifact:
     runs-on: self-hosted 
-    needs: create-backups
     steps:
       - name: Upload backup as artifact
         uses: actions/upload-artifact@v4
@@ -31,7 +26,6 @@ jobs:
           compression-level: 9
   remove-backup-directory:
     runs-on: self-hosted
-    needs: create-backups
     steps:
       - name: Clean up backup directory
         run: |
