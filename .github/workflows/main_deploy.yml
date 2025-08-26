@@ -6,6 +6,7 @@ on:
       - 'README.md'
       - 'LICENSE.md'
       - '.github/ISSUE_TEMPLATE/*'
+      - '.github/workflows/app_troubleshoot.yml'
   workflow_dispatch:
 
 concurrency:
