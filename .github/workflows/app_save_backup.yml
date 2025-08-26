@@ -1,0 +1,58 @@
+name: Save current wordpress state as artifacts (triggered by script on runner)
+on:
+  workflow_dispatch:
+
+jobs:
+  check-if-backup-folder-exists:
+    runs-on: self-hosted
+    steps:
+      - name: Check if backup folder exists
+        run: |
+          if [ ! -d "./wp-backup/" ]; then
+            echo "Backup directory does not exist. Exiting."
+            exit 1
+          else
+            echo "Backup directory exists. Proceeding..."
+          fi
+  upload-backup-as-artifact:
+    runs-on: self-hosted 
+    steps:
+      - name: Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordpress-backup
+          path: ./wp-backup/
+          retention-days: 30
+          compression-level: 9
+  remove-backup-directory:
+    runs-on: self-hosted
+    steps:
+      - name: Clean up backup directory
+        run: |
+          echo "Cleaning up backup directory"
+          rm -rf ./wp-backup/
+  remove-oldest-artifact:
+    runs-on: self-hosted
+    needs: upload-backup-as-artifact
+    steps:
+      - name: Remove oldest artifacts, keep newest 3
+        run: |
+          # List all artifacts for this workflow, sorted by creation date (oldest first)
+          artifact_ids=$(gh api repos/${{ github.repository }}/actions/artifacts \
+            --jq '.artifacts | sort_by(.created_at) | .[].id')
+          # Count total artifacts
+          total=$(echo "$artifact_ids" | wc -l)
+          # Calculate how many to delete
+          to_delete=$((total - 3))
+          if [ "$to_delete" -gt 0 ]; then
+            # Get IDs of artifacts to delete
+            ids_to_delete=$(echo "$artifact_ids" | head -n "$to_delete")
+            for id in $ids_to_delete; do
+              echo "Deleting artifact $id"
+              gh api --method DELETE repos/${{ github.repository }}/actions/artifacts/$id
+            done
+          else
+            echo "No old artifacts to delete."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

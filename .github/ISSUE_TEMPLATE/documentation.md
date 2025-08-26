@@ -1,7 +1,7 @@
 ---
 name: Documentation
 about: What can be added / modified in documentation
-title: "[DOCS] Title"
+title: "[Docs] "
 labels: documentation
 assignees: pazderskipawel
 

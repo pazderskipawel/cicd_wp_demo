@@ -2,66 +2,46 @@ name: Prepare Environment
 
 on:
   workflow_call: 
-  
+
 jobs:
-  checkout-code:
+  check-components:
     runs-on: self-hosted
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-  check-and-install-components:
-    runs-on: self-hosted
-    needs: checkout-code
+    outputs:
+      missing: ${{ steps.check-components.outputs.missing }}
     steps:
       - name: Check if components are installed
         id: check-components
         run: |
-          if ! command -v docker &> /dev/null; then
-            echo "Docker is not installed." 
-            echo "is_docker_installed=0" >> $GITHUB_OUTPUT
-          else
-            echo "Docker is already installed."
-            echo "is_docker_installed=1" >> $GITHUB_OUTPUT
-          fi
-          if ! docker compose version &> /dev/null; then
-            echo "Docker Compose is not installed."
-            echo "is_docker_compose_installed=0" >> $GITHUB_OUTPUT
-          else
-            echo "Docker Compose is already installed."
-            echo is_"docker_compose_installed=1" >> $GITHUB_OUTPUT
-          fi
-          if ! command -v mkcert &> /dev/null; then
-            echo "mkcert is not installed."
-            echo "is_mkcert_installed=0" >> $GITHUB_OUTPUT
-          else 
-            echo "mkcert is already installed."
-            echo "is_mkcert_installed=1" >> $GITHUB_OUTPUT     
-          fi
+          missing=""
+          for comp in docker docker-compose mkcert gh jq; do
+            if ! command -v $comp &> /dev/null; then
+              missing="$missing,$comp"
+            fi
+          done
+          # Remove leading comma
+          missing="${missing#,}"
+          echo "missing=$missing" >> $GITHUB_OUTPUT
+  install-components:
+    runs-on: self-hosted
+    needs: check-components
+    if: needs.check-components.outputs.missing != ''
+    steps:
       - name: Install components if not installed
-        if: steps.check-components.outputs.is_docker_installed == '0' || steps.check-components.outputs.is_docker_compose_installed == '0' || steps.check-components.outputs.is_mkcert_installed == '0'
-        id: install-components
         run: |
-          if [ "${{ steps.check-components.outputs.is_docker_installed }}" == "0" ]; then
-            echo "Installing Docker..."
-            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
-            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y docker.io
-            sudo systemctl enable --now docker
-            # curl -fsSL https://get.docker.com -o get-docker.sh
-            # sudo sh get-docker.sh
-            # sudo usermod -aG docker $USER
-            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
-          fi
-          if [ "${{ steps.check-components.outputs.is_docker_compose_installed }}" == "0" ]; then
-            echo "Installing Docker Compose..."
-            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-            mkdir -p $DOCKER_CONFIG/cli-plugins
-            curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-            chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
-          fi
-          if [ "${{ steps.check-components.outputs.is_mkcert_installed }}" == "0" ]; then
-            echo "Installing mkcert..."
-            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
-            echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
-            echo "::warning:: docker had to be installed by cicd workflow. Please check runner status"
-          fi
+          missing="${{ needs.check-components.outputs.missing }}"
+          echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt update -y
+          for comp in $(echo $missing | tr ',' ' '); do
+            case $comp in
+              docker)
+                echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y docker.io
+                sudo systemctl enable --now docker
+                ;;
+              mkcert)
+                echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y libnss3-tools mkcert
+                ;;
+              *)
+                echo "${{ secrets.RUNNER_SUDO_PASSWD }}" | sudo -S apt install -y $comp
+                ;;
+            esac
+            echo "::warning:: $comp had to be installed by cicd workflow. Please check runner status"
+          done

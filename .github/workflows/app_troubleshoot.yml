@@ -18,8 +18,18 @@ on:
         required: false
         default: true
         type: boolean
+      run_app:
+        description: 'Run application' 
+        required: false
+        default: true
+        type: boolean
       configure_app:
         description: 'Configure application'
+        required: false
+        default: true
+        type: boolean
+      check_containers:
+        description: 'Check if required containers are running'
         required: false
         default: true
         type: boolean
@@ -27,6 +37,11 @@ on:
         description: 'Validate application'
         required: false
         default: true
+        type: boolean
+      create_backup:
+        description: 'Create backup'
+        required: false
+        default: true 
         type: boolean
 
 jobs:
@@ -47,17 +62,53 @@ jobs:
     runs-on: self-hosted
     steps:
       - run: | 
-          echo "WordPress Admin User: ${{ vars.WORDPRESS_ADMIN_USER }}"
-          echo "WordPress Admin Password: ${{ secrets.WORDPRESS_ADMIN_PASSWORD }} | sed 's/./& /g"
-          echo "WordPress DB Name: ${{ vars.WORDPRESS_DB_NAME }}"
-          echo "WordPress DB User: ${{ vars.WORDPRESS_DB_USER }}"
-          echo "WordPress DB Password: ${{ secrets.WORDPRESS_DB_PASSWORD }} | sed 's/./& /g"
+          echo "WordPress Admin User: $WORDPRESS_ADMIN_USER"
+          echo "WordPress Admin Password: $WORDPRESS_ADMIN_PASSWORD"
+          echo "WordPress DB Name: $WORDPRESS_DB_NAME"
+          echo "WordPress DB User: $WORDPRESS_DB_USER"
+          echo "WordPress DB Password: $WORDPRESS_DB_PASSWORD"
   cleanup-docker:
     if: github.event.inputs.cleanup_docker == 'true'
     uses: ./.github/workflows/environment_docker_cleanup.yml
+  run-app:
+    if: github.event.inputs.run_app == 'true'
+    uses: ./.github/workflows/app_run.yml
   configure-app:
     if: github.event.inputs.configure_app == 'true'
     uses: ./.github/workflows/app_configure.yml
+  create-backup:
+    if: github.event.inputs.create_backup == 'true'
+    runs-on: self-hosted
+    steps:
+      - name: run backup script
+        run: |
+          if [ -f "./scripts/wordpress-backup.sh" ]; then
+            chmod +x ./scripts/wordpress-backup.sh
+            ./scripts/wordpress-backup.sh
+          else
+            echo "Backup script not found!"
+            exit 1
+          fi
+  check-containers:
+    if: github.event.inputs.check_containers == 'true'
+    runs-on: self-hosted
+    steps:
+      - name: Check if containers are running
+        run: |
+          required_containers=(db wordpress https)
+          missing=0
+          for c in "${required_containers[@]}"; do
+            if ! docker ps --format '{{.Names}}' | grep -qw "$c"; then
+              echo "Container $c is NOT running."
+              missing=1
+            else
+              echo "Container $c is running."
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required containers are not running."
+            exit 1
+          fi
   validate-app:
     if: github.event.inputs.validate_app == 'true'
     uses: ./.github/workflows/app_validate.yml
