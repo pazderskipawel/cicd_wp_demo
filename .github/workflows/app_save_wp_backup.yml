@@ -3,19 +3,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-if-backup-folder-exists:
+  prepare-backup:
     runs-on: self-hosted
     steps:
-      - name: Check if backup folder exists
+      - name: Create backup directory
+        run: mkdir -p ./wp-backup
+      - name: back up files
         run: |
-          if [ ! -d "./wp-backup/" ]; then
-            echo "Backup directory does not exist. Exiting."
-            exit 1
-          else
-            echo "Backup directory exists. Proceeding..."
-          fi
+          docker cp wordpress:/var/www/html/. ./wp-backup/
+          docker exec wordpress wp db export ./wp-backup/wordpress-database.sql --allow-root --path=/var/www/html
   upload-backup-as-artifact:
     runs-on: self-hosted 
+    needs: prepare-backup
     steps:
       - name: Upload backup as artifact
         uses: actions/upload-artifact@v4
@@ -32,6 +31,7 @@ jobs:
           echo "Cleaning up backup directory"
           rm -rf ./wp-backup/
   remove-oldest-artifact:
+    continue-on-error: true
     runs-on: self-hosted
     needs: upload-backup-as-artifact
     steps:
