@@ -8,11 +8,6 @@ on:
         required: false
         default: true
         type: boolean
-      run_app:
-        description: 'Run application' 
-        required: false
-        default: false
-        type: boolean
       configure_app:
         description: 'Configure application'
         required: false
@@ -47,9 +42,6 @@ jobs:
               echo "WordPress container not running"
               exit 1
             fi
-  run-app:
-    if: github.event.inputs.run_app == 'true'
-    uses: ./.github/workflows/app_run.yml
   configure-app:
     if: github.event.inputs.configure_app == 'true'
     uses: ./.github/workflows/app_configure.yml
