@@ -51,7 +51,7 @@ jobs:
   configure-plain-wordpress:
     if: ${{ needs.find-wp-backup.outputs.run_id == '' }} || ${{ needs.configure-wp-from-backup.result == 'failure' }}
     runs-on: self-hosted
-    needs: [install-wp-cli, find-wp-backup]
+    needs: [install-wp-cli, find-wp-backup, configure-wp-from-backup]
     steps:
       - name: Configure WordPress
         run: |

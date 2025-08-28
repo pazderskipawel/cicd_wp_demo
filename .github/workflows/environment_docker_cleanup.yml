@@ -1,4 +1,4 @@
-name: Cleanup Docker Images and Containers
+name: Cleanup existing docker containers and volumes
 
 on:
   workflow_call: 
@@ -7,12 +7,14 @@ jobs:
   cleanup-docker:
     runs-on: self-hosted
     steps:
-      - uses: nick-fields/retry@v3
+      - name: remove docker containers and volumes
+        uses: nick-fields/retry@v3
         #https://github.com/marketplace/actions/retry-step
         with:
           timeout_minutes: 5
           max_attempts: 3
           command: |
             echo "Cleaning up Docker containers and images..."
-            docker compose -f webapp/docker-compose.yml down -v --rmi all --remove-orphans
-            docker system prune -af --volumes
+            docker compose -f webapp/docker-compose.yml down
+            docker containers prune -f
+            docker volumes prune -f
