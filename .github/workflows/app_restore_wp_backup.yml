@@ -21,6 +21,7 @@ jobs:
           gh run download ${{ inputs.run_id }} -n wordpress-backup -D ./wp-restored/
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   restore-wordpress-state-from-backup:
     runs-on: self-hosted
     needs: download-wordpress-backup
@@ -35,6 +36,7 @@ jobs:
           echo "Restoring database from backup"
           docker exec wordpress wp db import ./wp-restored/wordpress-database.sql --allow-root --path=/var/www/html
           echo "Database restored successfully from backup"
+  
   remove-backup-directory:
     runs-on: self-hosted
     needs: restore-wordpress-state-from-backup

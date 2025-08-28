@@ -19,24 +19,59 @@ jobs:
     uses: ./.github/workflows/environment_prepare.yml
     secrets: 
       inherit
+
   checkout-code:
     runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
+  
   clean-up-last-build:
+    runs-on: self-hosted
     needs: prepare-environment
-    uses: ./.github/workflows/environment_docker_cleanup.yml
+    steps:
+      - name: remove docker containers and volumes
+        uses: nick-fields/retry@v3
+        #https://github.com/marketplace/actions/retry-step
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: |
+            echo "Cleaning up Docker containers and images..."
+            docker compose -f webapp/docker-compose.yml down
+            docker containers prune -f
+            docker volumes prune -f
+  
   start-app:
+    runs-on: self-hosted
     needs: [clean-up-last-build, checkout-code]
-    uses:  ./.github/workflows/app_run.yml
-    secrets:
-      inherit
+    steps:
+      - name: Start WordPress Containers
+        uses: nick-fields/retry@v3
+        #https://github.com/marketplace/actions/retry-step
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: |
+            WORDPRESS_SITE_TITLE="${{ vars.WORDPRESS_SITE_TITLE }}" \
+            WORDPRESS_ADMIN_USER="${{ vars.WORDPRESS_ADMIN_USER }}" \
+            WORDPRESS_ADMIN_PASSWORD="${{ secrets.WORDPRESS_ADMIN_PASSWORD }}" \
+            WORDPRESS_ADMIN_EMAIL="${{ vars.WORDPRESS_ADMIN_EMAIL }}" \
+            WORDPRESS_DB_NAME="${{ vars.WORDPRESS_DB_NAME }}" \
+            WORDPRESS_DB_USER="${{ vars.WORDPRESS_DB_USER }}" \
+            WORDPRESS_DB_PASSWORD="${{ secrets.WORDPRESS_DB_PASSWORD }}" \
+            MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}" \
+            GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
+            GITHUB_REPO="${{ github.repository }}" \
+            GITHUB_BRANCH="${{ github.ref_name }}" \
+            docker compose -f webapp/docker-compose.yml up -d
+    
   configure-app:
     needs: start-app
     uses: ./.github/workflows/app_configure.yml
     secrets:
       inherit
+      
   validate-app:
     needs: configure-app
     uses: ./.github/workflows/app_validate.yml

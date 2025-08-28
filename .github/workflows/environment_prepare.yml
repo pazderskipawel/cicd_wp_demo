@@ -21,6 +21,7 @@ jobs:
           # Remove leading comma
           missing="${missing#,}"
           echo "missing=$missing" >> $GITHUB_OUTPUT
+          
   install-components:
     runs-on: self-hosted
     needs: check-components

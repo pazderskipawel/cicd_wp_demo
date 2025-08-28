@@ -4,6 +4,7 @@ on:
   workflow_call:
 jobs:
   notify-on-fail:
+    if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Notify on Discord about failure
@@ -38,6 +39,48 @@ jobs:
                     },
                     {
                       "name": "Failure Details",
+                      "value": "Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details",
+                      "inline": false
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+                }]
+              }' \
+              ${{ secrets.DISCORD_WEBHOOK_URL }}
+          fi
+      - name: Notify on Discord about skipped
+        if: cancelled() || success() && github.event.workflow_run.conclusion == 'skipped'
+        run: |
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            curl -H "Content-Type: application/json" \
+              -d '{
+                "embeds": [{
+                  "title": "⚠️ Workflow skipped",
+                  "description": "The workflow was skipped for repository ${{ github.repository }}",
+                  "color": 16776960,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "${{ github.repository }}",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "${{ github.ref_name }}",
+                      "inline": true
+                    },
+                    {
+                      "name": "Workflow",
+                      "value": "${{ github.workflow }}",
+                      "inline": true
+                    },
+                    {
+                      "name": "Triggered by",
+                      "value": "${{ github.actor }}",
+                      "inline": true
+                    },
+                    {
+                      "name": "Details",
                       "value": "Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details",
                       "inline": false
                     }

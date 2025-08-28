@@ -15,6 +15,7 @@ jobs:
             echo "SSL certificate is NOT valid."
             exit 1
           fi
+
   validate-database:
     runs-on: self-hosted
     steps:
@@ -32,6 +33,7 @@ jobs:
         #      <h1>Error establishing a database connection</h1>
         #    </div>
 	      #  </body>
+        
   validate-website:
     needs: [validate-database, validate-ssl]
     runs-on: self-hosted  

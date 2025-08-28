@@ -12,6 +12,7 @@ jobs:
         run: |
           docker cp wordpress:/var/www/html/. ./wp-backup/
           docker exec wordpress wp db export ./wp-backup/wordpress-database.sql --allow-root --path=/var/www/html
+
   upload-backup-as-artifact:
     runs-on: self-hosted 
     needs: prepare-backup
@@ -23,6 +24,7 @@ jobs:
           path: ./wp-backup/
           retention-days: 30
           compression-level: 9
+
   remove-backup-directory:
     runs-on: self-hosted
     steps:
@@ -30,6 +32,7 @@ jobs:
         run: |
           echo "Cleaning up backup directory"
           rm -rf ./wp-backup/
+          
   remove-oldest-artifact:
     continue-on-error: true
     runs-on: self-hosted

@@ -8,11 +8,6 @@ on:
         required: false
         default: true
         type: boolean
-      cleanup_docker:   
-        description: 'Cleanup Docker environment'
-        required: false
-        default: false
-        type: boolean
       run_app:
         description: 'Run application' 
         required: false
@@ -52,9 +47,6 @@ jobs:
               echo "WordPress container not running"
               exit 1
             fi
-  cleanup-docker:
-    if: github.event.inputs.cleanup_docker == 'true'
-    uses: ./.github/workflows/environment_docker_cleanup.yml
   run-app:
     if: github.event.inputs.run_app == 'true'
     uses: ./.github/workflows/app_run.yml
