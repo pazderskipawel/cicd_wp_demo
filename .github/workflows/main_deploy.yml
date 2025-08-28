@@ -37,12 +37,14 @@ jobs:
           timeout_minutes: 5
           max_attempts: 3
           command: |
-            echo "Cleaning up Docker containers and images..."
+            echo "Stopping and removing WordPress containers..."
             docker compose -f webapp/docker-compose.yml down
+            echo "Pruning unused Docker containers..."
             docker containers prune -f
+            echo "Pruning unused Docker volumes..."
             docker volumes prune -f
   
-  start-app:
+  start-containers:
     runs-on: self-hosted
     needs: [clean-up-last-build, checkout-code]
     steps:
@@ -67,11 +69,11 @@ jobs:
             docker compose -f webapp/docker-compose.yml up -d
     
   configure-app:
-    needs: start-app
+    needs: start-containers
     uses: ./.github/workflows/app_configure.yml
     secrets:
       inherit
-      
+
   validate-app:
     needs: configure-app
     uses: ./.github/workflows/app_validate.yml
@@ -79,7 +81,7 @@ jobs:
       inherit
 
   notify-if-any-step-fails:
-    needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-app, configure-app]
+    needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-containers, configure-app]
     if: failure() || cancelled()
     uses: ./.github/workflows/notification_discord.yml
     secrets:
