@@ -80,9 +80,20 @@ jobs:
     secrets:
       inherit
 
-  notify-on-failure-or-skipped:
+  notify-on-failure:
     needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-containers, configure-app]
-    if: (needs.prepare-environment.result == 'failure' || needs.checkout-code.result == 'failure' || needs.clean-up-last-build.result == 'failure' || needs.start-containers.result == 'failure' || needs.configure-app.result == 'failure' || needs.validate-app.result == 'failure' || needs.prepare-environment.result == 'skipped' || needs.checkout-code.result == 'skipped' || needs.clean-up-last-build.result == 'skipped' || needs.start-containers.result == 'skipped' || needs.configure-app.result == 'skipped' || needs.validate-app.result == 'skipped')
+    if: always() && contains(needs.*.result, 'failure')
     uses: ./.github/workflows/notification_discord.yml
+    with:
+      notification_type: "failure"
+    secrets:
+      inherit
+
+  notify-on-skipped:
+    needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-containers, configure-app]
+    if: always() && contains(needs.*.result, 'skipped')
+    uses: ./.github/workflows/notification_discord.yml
+    with:
+      notification_type: "skipped"
     secrets:
       inherit
