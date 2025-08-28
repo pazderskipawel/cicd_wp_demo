@@ -42,8 +42,18 @@ jobs:
           "
   find-wp-backup:
     uses: ./.github/workflows/app_find_wp_backup.yml
+  configure-wp-from-backup:
+    if: ${{ needs.find-wp-backup.outputs.run_id != '' }}
+    runs-on: self-hosted
+    needs: find-wp-backup
+    steps:
+      - name: Restore WordPress from backup
+        uses: ./.github/workflows/app_restore_wp_backup.yml
+        with:
+          run_id: ${{ needs.find-wp-backup.outputs.run_id }}
+        continue-on-error: true
   configure-plain-wordpress:
-    if: ${{ needs.find-wp-backup.outputs.run_id == '' }}
+    if: ${{ needs.find-wp-backup.outputs.run_id == '' }} || ${{ needs.configure-wp-from-backup.result == 'failure' }}
     runs-on: self-hosted
     needs: [install-wp-cli, find-wp-backup]
     steps:
@@ -58,12 +68,3 @@ jobs:
             --admin_email="${{ vars.WORDPRESS_ADMIN_EMAIL }}" \
             --allow-root --path=/var/www/html
           "
-  configure-wp-from-backup:
-    if: ${{ needs.find-wp-backup.outputs.run_id != '' }}
-    runs-on: self-hosted
-    needs: find-wp-backup
-    steps:
-      - name: Restore WordPress from backup
-        uses: ./.github/workflows/app_restore_wp_backup.yml
-        with:
-          run_id: ${{ needs.find-wp-backup.outputs.run_id }}
