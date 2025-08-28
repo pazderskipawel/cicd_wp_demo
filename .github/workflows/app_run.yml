@@ -22,4 +22,7 @@ jobs:
             WORDPRESS_DB_USER="${{ vars.WORDPRESS_DB_USER }}" \
             WORDPRESS_DB_PASSWORD="${{ secrets.WORDPRESS_DB_PASSWORD }}" \
             MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}" \
+            GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}" \
+            GITHUB_REPO="${{ github.repository }}" \
+            GITHUB_BRANCH="${{ github.ref_name }}" \
             docker compose -f webapp/docker-compose.yml up -d
