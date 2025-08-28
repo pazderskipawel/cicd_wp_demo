@@ -21,7 +21,7 @@ Looking overall state of repo and number of commits I think this should be a `De
 ## CI/CD Workflows
 ### Summary of main workflow:
   1. Clean up last environment
-      1. Clean up current docker resources related to project
+      1. Clean up current docker containers and volumes related to project
   2. Prepare environment
       1. Check out code
       2. Check out current environment 
@@ -39,23 +39,20 @@ Looking overall state of repo and number of commits I think this should be a `De
   6. Send notifications when build failed or was skipped
 ### Maintenance workflow - activated manually - allows to choose which jobs from below list should be started
   1. List installed wordpress plugins
-  2. Docker images cleanup
   3. Configure wordpress
   4. Perform app validation
   5. Create backup
-### Save Wordpress state (Back up Wordress) - activted by script on runner
-  1. script:
-      1. Create directory for backup
-      2. Copy WP files from container
-      3. Create db dump from container
-      4. calls workflow
-  2. workflow
-      1. Upload backup as `artifact`
-      2. Delete backup directory
-      3. Delete oldest artifacts 
-### Restore Wordpress backup workflow - activated manually (planned to be part of main workflow)
+### Save Wordpress state (Back up Wordress), called manually or automatically when container stops
+  1. Create directory for backup
+  2. Copy WP files from container
+  3. Create db dump from container
+  1. Upload backup as `artifact`
+  2. Delete backup directory
+  3. Delete oldest artifacts 
+### Restore Wordpress backup workflow 
   1. Find last successfull build id
   2. Download artifact from that run
   3. Upload restored backup to containers
+  4. If any pf this steps fails, plain version of WordPress will be installed
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 

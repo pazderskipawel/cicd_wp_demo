@@ -8,11 +8,11 @@ on:
         type: string
         description: 'Type of notification: failure or skipped'
 jobs:
-  notify-on-fail:
-    if: inputs.notification_type == 'failure'
+  send-discord-notification:
     runs-on: ubuntu-latest
     steps:
       - name: Notify on Discord about failure
+        if: inputs.notification_type == 'failure'
         run: |
           if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             curl -H "Content-Type: application/json" \
