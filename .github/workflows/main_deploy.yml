@@ -75,9 +75,9 @@ jobs:
     secrets:
       inherit
 
-  notify-if-any-step-did-not-succeed:
+  notify-if-any-step-failed-or-skipped:
     needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-containers, configure-app]
-    if: ${{ needs.prepare-environment.result != 'success' || needs.checkout-code.result != 'success' || needs.clean-up-last-build.result != 'success' || needs.start-containers.result != 'success' || needs.configure-app.result != 'success' || needs.validate-app.result != 'success' }}
+    if: (needs.prepare-environment.result == 'failure' || needs.checkout-code.result == 'failure' || needs.clean-up-last-build.result == 'failure' || needs.start-containers.result == 'failure' || needs.configure-app.result == 'failure' || needs.validate-app.result == 'failure' || needs.prepare-environment.result == 'skipped' || needs.checkout-code.result == 'skipped' || needs.clean-up-last-build.result == 'skipped' || needs.start-containers.result == 'skipped' || needs.configure-app.result == 'skipped' || needs.validate-app.result == 'skipped')
     uses: ./.github/workflows/notification_discord.yml
     secrets:
       inherit
