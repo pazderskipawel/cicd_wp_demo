@@ -11,7 +11,7 @@ jobs:
       - name: back up files
         run: |
           docker cp wordpress:/var/www/html/. ./wp-backup/
-          docker exec db mysqldump -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} wordpress > ./wp-backup/wordpress-db.sql --allow-root --path=/var/www/html
+          docker exec db mysqldump -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} wordpress > ./wp-backup/wordpress-db.sql
 
   upload-backup-as-artifact:
     runs-on: self-hosted 
