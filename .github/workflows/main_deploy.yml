@@ -31,14 +31,19 @@ jobs:
     needs: prepare-environment
     steps:
       - name: remove docker containers and volumes
-        run: |
-          echo "Stopping and removing WordPress containers..."
-          docker compose -f webapp/docker-compose.yml down
-          echo "Pruning unused Docker containers..."
-          docker containers prune -f
-          echo "Pruning unused Docker volumes..."
-          docker volumes prune -f
-
+        uses: nick-fields/retry@v3
+        #https://github.com/marketplace/actions/retry-step
+        with:
+          timeout_minutes: 5
+          max_attempts: 3
+          command: |
+            echo "Stopping and removing WordPress containers..."
+            docker compose -f webapp/docker-compose.yml down
+            echo "Pruning unused Docker containers..."
+            docker container prune -f
+            echo "Pruning unused Docker volumes..."
+            docker volume prune -f
+  
   start-containers:
     runs-on: self-hosted
     needs: [clean-up-last-build, checkout-code]
@@ -75,7 +80,7 @@ jobs:
     secrets:
       inherit
 
-  notify-if-any-step-failed-or-skipped:
+  notify-on-failure-or-skipped:
     needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-containers, configure-app]
     if: (needs.prepare-environment.result == 'failure' || needs.checkout-code.result == 'failure' || needs.clean-up-last-build.result == 'failure' || needs.start-containers.result == 'failure' || needs.configure-app.result == 'failure' || needs.validate-app.result == 'failure' || needs.prepare-environment.result == 'skipped' || needs.checkout-code.result == 'skipped' || needs.clean-up-last-build.result == 'skipped' || needs.start-containers.result == 'skipped' || needs.configure-app.result == 'skipped' || needs.validate-app.result == 'skipped')
     uses: ./.github/workflows/notification_discord.yml
