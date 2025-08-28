@@ -8,35 +8,20 @@ on:
         required: false
         default: true
         type: boolean
-      get_repo_secrets: 
-        description: 'List repository secrets'
-        required: false
-        default: true
-        type: boolean
-      cleanup_docker:   
-        description: 'Cleanup Docker environment'
-        required: false
-        default: true
-        type: boolean
-      run_app:
-        description: 'Run application' 
-        required: false
-        default: true
-        type: boolean
       configure_app:
         description: 'Configure application'
         required: false
-        default: true
+        default: false
         type: boolean
       check_containers:
         description: 'Check if required containers are running'
         required: false
-        default: true
+        default: false
         type: boolean
       validate_app:
         description: 'Validate application'
         required: false
-        default: true
+        default: false
         type: boolean
       create_backup:
         description: 'Create backup'
@@ -57,22 +42,6 @@ jobs:
               echo "WordPress container not running"
               exit 1
             fi
-  get-repo-secrets:
-    if: github.event.inputs.get_repo_secrets == 'true'
-    runs-on: self-hosted
-    steps:
-      - run: | 
-          echo "WordPress Admin User: $WORDPRESS_ADMIN_USER"
-          echo "WordPress Admin Password: $WORDPRESS_ADMIN_PASSWORD"
-          echo "WordPress DB Name: $WORDPRESS_DB_NAME"
-          echo "WordPress DB User: $WORDPRESS_DB_USER"
-          echo "WordPress DB Password: $WORDPRESS_DB_PASSWORD"
-  cleanup-docker:
-    if: github.event.inputs.cleanup_docker == 'true'
-    uses: ./.github/workflows/environment_docker_cleanup.yml
-  run-app:
-    if: github.event.inputs.run_app == 'true'
-    uses: ./.github/workflows/app_run.yml
   configure-app:
     if: github.event.inputs.configure_app == 'true'
     uses: ./.github/workflows/app_configure.yml
@@ -82,13 +51,11 @@ jobs:
     steps:
       - name: run backup script
         run: |
-          if [ -f "./scripts/wordpress-backup.sh" ]; then
-            chmod +x ./scripts/wordpress-backup.sh
-            ./scripts/wordpress-backup.sh
-          else
-            echo "Backup script not found!"
-            exit 1
-          fi
+          echo "Starting backup process"
+          gh workflow run app_save_wp_backup.yml
+          echo "Backup process initiated"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   check-containers:
     if: github.event.inputs.check_containers == 'true'
     runs-on: self-hosted

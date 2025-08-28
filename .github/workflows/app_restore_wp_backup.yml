@@ -1,6 +1,12 @@
 name: Restore latest saved wordpress state from artifacts (Manual trigger)
 on:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      run_id:
+        description: 'The run ID of the workflow that created the backup artifact'
+        required: true
+        type: string
 
 jobs:
   download-wordpress-backup:
@@ -10,18 +16,12 @@ jobs:
         run: |
           echo "Creating restore directory"
           mkdir -p ./wp-restored
-      - name: Find last successful run of saving state workflow
-        id: get_run
-        run: |
-          run_id=$(gh run list --workflow app_save_current_state.yml --status success --limit 1 --json databaseId | jq -r '.[0].databaseId')
-          echo "run_id=$run_id" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download artifact from last successful run
         run: |
-          gh run download ${{ steps.get_run.outputs.run_id }} -n wordpress-backup -D ./wp-restored/
+          gh run download ${{ inputs.run_id }} -n wordpress-backup -D ./wp-restored/
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   restore-wordpress-state-from-backup:
     runs-on: self-hosted
     needs: download-wordpress-backup
@@ -34,8 +34,9 @@ jobs:
       - name: Restore database from backup
         run: |
           echo "Restoring database from backup"
-          docker exec wordpress wp db import ./wp-restored/wordpress-db.sql --allow-root --path=/var/www/html
+          docker exec wordpress wp db import ./wp-restored/wordpress-database.sql --allow-root --path=/var/www/html
           echo "Database restored successfully from backup"
+  
   remove-backup-directory:
     runs-on: self-hosted
     needs: restore-wordpress-state-from-backup

@@ -12,7 +12,7 @@ Looking overall state of repo and number of commits I think this should be a `De
 - ideally database shoud be on diffrent server or in cloud service
 - ideally for SSL it should use let's encrypt or similar service instead of mkcert
 ## Main pipeline status
-[![CI](https://github.com/pazderskipawel/githubactions/actions/workflows/deploy_everything.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/githubactions/actions/workflows/deploy_everything.yml?query=branch%3Amain)
+[![CI](https://github.com/pazderskipawel/githubactions/actions/workflows/main_deploy.yml/badge.svg?branch=main)](https://github.com/pazderskipawel/githubactions/actions/workflows/main_deploy.yml?query=branch%3Amain)
 ## Getting Started
 - Setup Self-Hosted Runner
   - To add runner: go to Repository settings > Actions > runners > add new self-hosted runner
@@ -39,21 +39,23 @@ Looking overall state of repo and number of commits I think this should be a `De
   6. Send notifications when build failed or was skipped
 ### Maintenance workflow - activated manually - allows to choose which jobs from below list should be started
   1. List installed wordpress plugins
-  2. Lists wordpress variables
-  3. Docker images cleanup
-  4. Configure wordpress
-  5. Perform app validation
-### Save Wordpress state workflow (Back up Wordress) - activted manually
-  1. Create directory for backup
-  2. Copy WP files from container
-  2. Create db dump from container
-  3. Upload backup as `artifact`
-  4. Delete backup directory
-  5. Delete oldest artifacts 
+  2. Docker images cleanup
+  3. Configure wordpress
+  4. Perform app validation
+  5. Create backup
+### Save Wordpress state (Back up Wordress) - activted by script on runner
+  1. script:
+      1. Create directory for backup
+      2. Copy WP files from container
+      3. Create db dump from container
+      4. calls workflow
+  2. workflow
+      1. Upload backup as `artifact`
+      2. Delete backup directory
+      3. Delete oldest artifacts 
 ### Restore Wordpress backup workflow - activated manually (planned to be part of main workflow)
-  1. Create directory for restored backup (temporary)
-  2. Find last successfull build id
-  3. Download artifact from that run
-  5. Upload restored backup to containers
+  1. Find last successfull build id
+  2. Download artifact from that run
+  3. Upload restored backup to containers
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 

@@ -1,0 +1,20 @@
+name: Restore latest saved wordpress state from artifacts (Manual trigger)
+on:
+  workflow_call:
+    outputs:
+      run_id:
+        description: 'The run ID of the workflow that created the backup artifact'
+        value: ${{ jobs.find-artifact-with-wordpress-backup.outputs.run_id }}
+jobs:
+  find-artifact-with-wordpress-backup:
+    runs-on: self-hosted
+    outputs:
+      run_id: ${{ steps.get_run.outputs.run_id }}
+    steps: 
+      - name: Find last successful run of saving state workflow
+        id: get_run
+        run: |
+          run_id=$(gh run list --workflow app_save_current_state.yml --status success --limit 1 --json databaseId | jq -r '.[0].databaseId')
+          echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
