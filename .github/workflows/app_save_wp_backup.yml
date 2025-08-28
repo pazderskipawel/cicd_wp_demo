@@ -27,6 +27,7 @@ jobs:
 
   remove-backup-directory:
     runs-on: self-hosted
+    needs: upload-backup-as-artifact
     steps:
       - name: Clean up backup directory
         run: |
