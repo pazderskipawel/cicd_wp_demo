@@ -61,7 +61,7 @@ jobs:
   configure-wp-from-backup:
     if: ${{ needs.find-wp-backup.outputs.run_id != '' }}
     runs-on: self-hosted
-    needs: [install-wp-cli, find-wp-backup]
+    needs: find-wp-backup
     steps:
       - name: Restore WordPress from backup
         uses: ./.github/workflows/app_restore_wp_backup.yml
