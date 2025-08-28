@@ -40,9 +40,9 @@ jobs:
             echo "Stopping and removing WordPress containers..."
             docker compose -f webapp/docker-compose.yml down
             echo "Pruning unused Docker containers..."
-            docker containers prune -f
+            docker containers prune --force
             echo "Pruning unused Docker volumes..."
-            docker volumes prune -f
+            docker volumes prune --force
   
   start-containers:
     runs-on: self-hosted
@@ -80,9 +80,9 @@ jobs:
     secrets:
       inherit
 
-  notify-if-any-step-fails:
+  notify-if-any-step-did-not-succeed:
     needs: [prepare-environment, checkout-code, clean-up-last-build, validate-app, start-containers, configure-app]
-    if: failure() || cancelled()
+    if: ${{ needs.prepare-environment.result != 'success' || needs.checkout-code.result != 'success' || needs.clean-up-last-build.result != 'success' || needs.start-containers.result != 'success' || needs.configure-app.result != 'success' || needs.validate-app.result != 'success' }}
     uses: ./.github/workflows/notification_discord.yml
     secrets:
       inherit
