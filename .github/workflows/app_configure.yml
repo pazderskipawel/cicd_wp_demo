@@ -21,7 +21,7 @@ jobs:
           docker cp localhost-key.pem https:/etc/nginx/conf.d/localhost-key.pem
           docker cp ./webapp/nginx-config/default.conf https:/etc/nginx/conf.d/default.conf
           docker exec https /bin/bash -c "service nginx reload"
-  configure-wordpress:
+  install-wp-cli:
     runs-on: self-hosted
     steps:
       - name: Install WP-CLI
@@ -40,6 +40,13 @@ jobs:
             done;
             echo 'Database is ready'
           "
+  find-wp-backup:
+    uses: ./.github/workflows/app_find_wp_backup.yml
+  configure-plain-wordpress:
+    if: ${{ needs.find-wp-backup.outputs.run_id == '' }}
+    runs-on: self-hosted
+    needs: [install-wp-cli, find-wp-backup]
+    steps:
       - name: Configure WordPress
         run: |
           docker exec wordpress /bin/bash -c "
@@ -51,7 +58,12 @@ jobs:
             --admin_email="${{ vars.WORDPRESS_ADMIN_EMAIL }}" \
             --allow-root --path=/var/www/html
           "
-      #- name: Set up urls
-      #  run: |
-      #    docker exec wordpress /bin/bash -c "wp option update home "http://localhost" --allow-root --path=/var/www/html"
-      #    docker exec wordpress /bin/bash -c "wp option update siteurl "http://localhost" --allow-root --path=/var/www/html"
+  configure-wp-from-backup:
+    if: ${{ needs.find-wp-backup.outputs.run_id != '' }}
+    runs-on: self-hosted
+    needs: [install-wp-cli, find-wp-backup]
+    steps:
+      - name: Restore WordPress from backup
+        uses: ./.github/workflows/app_restore_wp_backup.yml
+        with:
+          run_id: ${{ needs.find-wp-backup.outputs.run_id }}

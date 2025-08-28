@@ -67,13 +67,7 @@ jobs:
     steps:
       - name: run backup script
         run: |
-          if [ -f "./webapp/scripts/wordpress-backup.sh" ]; then
-            chmod +x ./webapp/scripts/wordpress-backup.sh
-            ./webapp/scripts/wordpress-backup.sh
-          else
-            echo "Backup script not found!"
-            exit 1
-          fi
+          docker exec wordpress /bin/bash -c "sh /usr/local/bin/trigger-wp-backup.sh"
   check-containers:
     if: github.event.inputs.check_containers == 'true'
     runs-on: self-hosted

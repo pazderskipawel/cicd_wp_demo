@@ -13,8 +13,16 @@ services:
       WORDPRESS_ADMIN_USER: ${WORDPRESS_ADMIN_USER}
       WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD}
       WORDPRESS_ADMIN_EMAIL: ${WORDPRESS_ADMIN_EMAIL}
+      GITHUB_TOKEN: ${GITHUB_TOKEN} #Token to trigger GitHub Actions workflow for backup
+      GITHUB_REPO: ${GITHUB_REPO} #Repository to trigger the workflow in format user/repo
     volumes:
      - ./wordpress-config/:/var/www/wordpress-config
+     - ./webapp/scripts/trigger-wp-backup.sh:/usr/local/bin/trigger-wp-backup.sh
+    stop_grace_period: 120s
+    # Custom entrypoint to handle backup triggering when container stops
+    command: >
+      sh -c "trap 'sh /usr/local/bin/trigger-backup.sh; sleep 60' TERM INT;
+             docker-entrypoint.sh apache2-foreground"
     networks:
       - wp-net
 
@@ -28,6 +36,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+    stop_grace_period: 120s
     networks:
       - wp-net
 
@@ -39,6 +48,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    stop_grace_period: 120s
     networks:
       - wp-net
 
