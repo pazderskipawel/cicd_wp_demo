@@ -1,6 +1,11 @@
-name: Restore latest saved wordpress state from artifacts (Manual trigger)
+name: Restore latest saved wordpress state from artifacts (Manual or called during main build)
 on:
   workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'The run ID of the workflow that created the backup artifact'
+        required: true
+        type: string
   workflow_call:
     inputs:
       run_id:
