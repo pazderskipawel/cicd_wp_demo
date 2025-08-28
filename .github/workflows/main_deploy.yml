@@ -31,19 +31,14 @@ jobs:
     needs: prepare-environment
     steps:
       - name: remove docker containers and volumes
-        uses: nick-fields/retry@v3
-        #https://github.com/marketplace/actions/retry-step
-        with:
-          timeout_minutes: 5
-          max_attempts: 3
-          command: |
-            echo "Stopping and removing WordPress containers..."
-            docker compose -f webapp/docker-compose.yml down
-            echo "Pruning unused Docker containers..."
-            docker containers prune --force
-            echo "Pruning unused Docker volumes..."
-            docker volumes prune --force
-  
+        run: |
+          echo "Stopping and removing WordPress containers..."
+          docker compose -f webapp/docker-compose.yml down
+          echo "Pruning unused Docker containers..."
+          docker containers prune -f
+          echo "Pruning unused Docker volumes..."
+          docker volumes prune -f
+
   start-containers:
     runs-on: self-hosted
     needs: [clean-up-last-build, checkout-code]
