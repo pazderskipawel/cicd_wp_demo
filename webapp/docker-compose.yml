@@ -19,9 +19,8 @@ services:
      - ./wordpress-config/:/var/www/wordpress-config
     stop_grace_period: 120s
     # Custom entrypoint to handle backup triggering when container stops
-    command: |
-      sh -c "trap 'curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$GITHUB_REPO/actions/workflows/app_save_wp_backup.yml/dispatches' TERM INT;
-      docker-entrypoint.sh apache2-foreground"
+    command: | 
+      /bin/bash -c "trap 'curl -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$GITHUB_REPO/actions/workflows/app_save_wp_backup.yml/dispatches' TERM INT; docker-entrypoint.sh apache2-foreground"
     networks:
       - wp-net
 
