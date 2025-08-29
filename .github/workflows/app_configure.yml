@@ -50,6 +50,8 @@ jobs:
     uses: ./.github/workflows/app_restore_wp_backup.yml
     with:
           run_id: ${{ needs.find-wp-backup.outputs.run_id }}
+    secrets:
+          inherit
 
   configure-plain-wordpress:
     if: ${{ needs.find-wp-backup.outputs.run_id == '' }} || ${{ needs.configure-wp-from-backup.result == 'failure' }}

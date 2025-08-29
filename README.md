@@ -19,43 +19,8 @@ Looking overall state of repo and number of commits I think this should be a `De
   - If you want to autostart worker as a ([service](https://docs.github.com/en/actions/how-tos/managing-self-hosted-runners/configuring-the-self-hosted-runner-application-as-a-service)) use `sudo ./svc.sh install && sudo ./svh.sh start` instead of `.run.sh`
 - After setting up runner everything should be installed automatically on it after triggering workflow
 ## CI/CD Workflows
-### Summary of main workflow:
-  1. Clean up last environment
-      1. Clean up current docker resources related to project
-  2. Prepare environment
-      1. Check out code
-      2. Check out current environment 
-      3. Install docker and docker compose if its not installed 
-  3. Run app 
-      1. Start containers and mount eeded configurations
-  4. Configure app
-      1. Configures nginx reverse proxy 
-      2. Configures wordpress (installs `WP-CLI`, finishes installation of WP )
-  5. Validate app
-      1. Check if containers are working
-      2. Check if SSL certificates are valid
-      2. Check if website is available
-      4. Check if website is running
-  6. Send notifications when build failed or was skipped
-### Maintenance workflow - activated manually - allows to choose which jobs from below list should be started
-  1. List installed wordpress plugins
-  2. Docker images cleanup
-  3. Configure wordpress
-  4. Perform app validation
-  5. Create backup
-### Save Wordpress state (Back up Wordress) - activted by script on runner
-  1. script:
-      1. Create directory for backup
-      2. Copy WP files from container
-      3. Create db dump from container
-      4. calls workflow
-  2. workflow
-      1. Upload backup as `artifact`
-      2. Delete backup directory
-      3. Delete oldest artifacts 
-### Restore Wordpress backup workflow - activated manually (planned to be part of main workflow)
-  1. Find last successfull build id
-  2. Download artifact from that run
-  3. Upload restored backup to containers
+- Main workflow - sets up envirnmnt, starts and configures app containers
+- Backup save/restore workflows - allow to save wordpress state without any more configuration
+- Troubleshooting workflow - enabled manually, created to help with any app troubleshooting
 ## Secrets & Variables
 - Repo uses github action variables and secrets, so no sensitive data shuold be leaked 

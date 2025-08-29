@@ -11,7 +11,7 @@ jobs:
       - name: back up files
         run: |
           docker cp wordpress:/var/www/html/. ./wp-backup/
-          docker exec wordpress wp db export ./wp-backup/wordpress-database.sql --allow-root --path=/var/www/html
+          docker exec db mysqldump -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} wordpress > ./wp-backup/wordpress-db.sql
 
   upload-backup-as-artifact:
     runs-on: self-hosted 
@@ -22,11 +22,12 @@ jobs:
         with:
           name: wordpress-backup
           path: ./wp-backup/
-          retention-days: 30
+          retention-days: 7
           compression-level: 9
 
   remove-backup-directory:
     runs-on: self-hosted
+    needs: upload-backup-as-artifact
     steps:
       - name: Clean up backup directory
         run: |

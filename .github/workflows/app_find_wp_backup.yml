@@ -1,4 +1,4 @@
-name: Restore latest saved wordpress state from artifacts (Manual trigger)
+name: find WP Backup
 on:
   workflow_call:
     outputs:
@@ -14,7 +14,7 @@ jobs:
       - name: Find last successful run of saving state workflow
         id: get_run
         run: |
-          run_id=$(gh run list --workflow app_save_current_state.yml --status success --limit 1 --json databaseId | jq -r '.[0].databaseId')
+          run_id=$(gh run list --workflow app_save_wp_backup.yml --status success --limit 1 --json databaseId | jq -r '.[0].databaseId')
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

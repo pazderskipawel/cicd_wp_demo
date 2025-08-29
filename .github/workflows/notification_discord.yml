@@ -2,12 +2,17 @@ name: Send Discord Notification
 
 on:
   workflow_call:
+    inputs:
+      notification_type:
+        required: true
+        type: string
+        description: 'Type of notification: failure or skipped'
 jobs:
-  notify-on-fail:
-    if: failure()
+  send-discord-notification:
     runs-on: ubuntu-latest
     steps:
       - name: Notify on Discord about failure
+        if: inputs.notification_type == 'failure'
         run: |
           if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             curl -H "Content-Type: application/json" \
@@ -49,7 +54,7 @@ jobs:
               ${{ secrets.DISCORD_WEBHOOK_URL }}
           fi
       - name: Notify on Discord about skipped
-        if: cancelled() || success() && github.event.workflow_run.conclusion == 'skipped'
+        if: inputs.notification_type == 'skipped'
         run: |
           if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             curl -H "Content-Type: application/json" \

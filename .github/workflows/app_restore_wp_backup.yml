@@ -1,6 +1,11 @@
-name: Restore latest saved wordpress state from artifacts (Manual trigger)
+name: Restore latest saved wordpress state from artifacts (Manual or called during main build)
 on:
   workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'The run ID of the workflow that created the backup artifact'
+        required: true
+        type: string
   workflow_call:
     inputs:
       run_id:
@@ -21,6 +26,7 @@ jobs:
           gh run download ${{ inputs.run_id }} -n wordpress-backup -D ./wp-restored/
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    continue-on-error: true
 
   restore-wordpress-state-from-backup:
     runs-on: self-hosted
@@ -34,8 +40,13 @@ jobs:
       - name: Restore database from backup
         run: |
           echo "Restoring database from backup"
-          docker exec wordpress wp db import ./wp-restored/wordpress-database.sql --allow-root --path=/var/www/html
+          docker exec -i db mysql -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} wordpress < ./wp-restored/wordpress-db.sql
           echo "Database restored successfully from backup"
+      - name: Change ownership on WordPress files
+        run: |
+          docker exec wordpress chown -R www-data:www-data /var/www/html
+          docker exec wordpress chmod -R 755 /var/www/html
+    continue-on-error: true
   
   remove-backup-directory:
     runs-on: self-hosted
