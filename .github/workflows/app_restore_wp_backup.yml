@@ -42,6 +42,10 @@ jobs:
           echo "Restoring database from backup"
           docker exec -i db mysql -u root -p${{ secrets.MYSQL_ROOT_PASSWORD }} wordpress < ./wp-restored/wordpress-db.sql
           echo "Database restored successfully from backup"
+      - name: Change ownership on WordPress files
+        run: |
+          docker exec wordpress chown -R www-data:www-data /var/www/html
+          docker exec wordpress chmod -R 755 /var/www/html
     continue-on-error: true
   
   remove-backup-directory:
