@@ -22,7 +22,7 @@ jobs:
         with:
           name: wordpress-backup
           path: ./wp-backup/
-          retention-days: 30
+          retention-days: 7
           compression-level: 9
 
   remove-backup-directory:

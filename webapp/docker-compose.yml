@@ -16,8 +16,6 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN} #Token to trigger GitHub Actions workflow for backup
       GITHUB_REPO: ${GITHUB_REPO} #Repository to trigger the workflow in format user/repo
       GITHUB_BRANCH: ${GITHUB_BRANCH} #Branch to trigger the workflow on
-    volumes:
-     - ./wordpress-config/:/var/www/wordpress-config
     stop_grace_period: 120s
     # Custom entrypoint to handle backup triggering when container stops.
     command: | 
@@ -33,8 +31,6 @@ services:
       MYSQL_USER: ${WORDPRESS_DB_USER}
       MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - db_data:/var/lib/mysql
     stop_grace_period: 120s
     networks:
       - wp-net
@@ -50,9 +46,6 @@ services:
     stop_grace_period: 120s
     networks:
       - wp-net
-
-volumes:
-  db_data:
 
 networks:
   wp-net:
