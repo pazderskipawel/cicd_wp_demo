@@ -1,4 +1,4 @@
-title: WordPress CI/CD Demo Dockumentation
+title: WordPress CI/CD Demo Documentation
 description: Automated WordPress deployment with Docker and GitHub Actions
 
 remote-theme: just-the-docs/just-the-docs
@@ -9,7 +9,4 @@ plugins:
   - jekyll-remote-theme
   - jekyll-feed
 
-header_pages:
-  - index.md
-  - 
 
