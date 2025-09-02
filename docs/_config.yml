@@ -1,5 +1,6 @@
 title: WordPress CI/CD Demo Documentation
 description: Automated WordPress deployment with Docker and GitHub Actions
+url: "https://pazderskipawel.github.io"
 baseurl: "/cicd_wp_demo"
 
 theme: jekyll-theme-minimal
