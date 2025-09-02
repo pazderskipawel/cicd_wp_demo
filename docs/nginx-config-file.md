@@ -1,3 +1,9 @@
+---
+layout: default
+title: Nginx configuration
+rank: 7
+---
+
 # Nginx reverse proxy 
 - set up to enable https on wordpress
 - currently, it's using `mkcert` which is "enough" for local 

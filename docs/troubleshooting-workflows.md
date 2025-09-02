@@ -1,3 +1,8 @@
+---
+layout: default
+title: Troubleshooting workflow
+rank: 5
+---
  # Troubleshooting workflow
  - workflow activated manually - allows to choose which jobs from below list should be started
 ## Current jobs

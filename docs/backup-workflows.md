@@ -1,3 +1,8 @@
+---
+layout: default
+title: Backups workflows
+rank: 4
+---
 # Save Wordpress state (Back up current Wordress state)
 - can be called manually, or automatically when container stops
 ## Summary

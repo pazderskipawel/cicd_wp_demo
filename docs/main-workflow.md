@@ -1,3 +1,8 @@
+---
+layout: default
+title: Main workflow
+rank: 3
+---
 # Main workflow
 ## Summary
   1. Clean up last environment

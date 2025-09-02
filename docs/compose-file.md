@@ -1,3 +1,9 @@
+---
+layout: default
+title: Docker compose
+rank: 6
+---
+
 # Docker compose file with main application containers
 ## Wordpress app
 - depends on database container to make sure tat database is active
