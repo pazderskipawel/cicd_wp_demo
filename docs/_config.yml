@@ -1,11 +1,13 @@
 title: WordPress CI/CD Demo Dockumentation
 description: Automated WordPress deployment with Docker and GitHub Actions
 
-theme: just-the-docs
+remote-theme: just-the-docs/just-the-docs
 markdown: kramdown
 plugins:
   - jekyll-mermaid
   - jekyll-sitemap
+  - jekyll-remote-theme
+  - jekyll-feed
 
 header_pages:
   - index.md
