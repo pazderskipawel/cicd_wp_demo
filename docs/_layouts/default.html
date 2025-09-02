@@ -48,17 +48,22 @@
             </li>
           {% endif %}
         {% endfor %}
-        <h3>Menu 2</h3>
-        {% assign categories = site.html_pages | sort:"category" %}
+        <h4>New menu</h4>
+        {% assign pages = site.html_pages | where_exp: "item", "item.category" %}
+        {% assign sorted_pages = pages | sort: "category" %}
+        {% assign categories = sorted_pages | map: "category" | uniq %}
         {% for category in categories %}
-          {% assign sites = site.html_pages | sort:"place" %}
-          {% for site in sites %}
-            {% if site.title and site.category and site.place %}
-              <li>
-                <a href="{{ site.path | replace:'.md','.html' }}">{{ site.title }}</a>
-              </li>
-            {% endif %}
-          {% endfor %}
+          <h5>{{ category }}</h5>
+          <ul>
+            {% assign category_pages = sorted_pages | where: "category", category | sort: "place" %}
+            {% for page in category_pages %}
+              {% if page.title %}
+                <li>
+                  <a href="{{ page.url | replace: '.md', '.html' }}">{{ page.title }}</a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
         {% endfor %}
       </header>
       <section>
