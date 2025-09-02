@@ -54,7 +54,7 @@
             </a>
           </p>
         <!-- menu -->
-        {% assign categories = "Home,Workflows,Containers" | split: "," %}
+        {% assign categories = "Home,Workflows,Containers,Docs" | split: "," %}
         {% for category in categories %}
           <b>{{ category }}</b>
           {% assign category_pages = site.pages | where: "category", category | sort: "place" %}

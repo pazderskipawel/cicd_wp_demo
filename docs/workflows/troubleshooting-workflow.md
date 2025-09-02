@@ -4,7 +4,7 @@ title: Troubleshooting workflow
 category: Workflows
 place: 3
 ---
- # Troubleshooting workflow
+# Troubleshooting workflow
 
 <div class="mermaid">
 flowchart TD
