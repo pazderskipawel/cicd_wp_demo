@@ -15,10 +15,12 @@ flowchart TD
     D --> E
     E --> F[Configure app]
     F --> G[Validate app]
-    B --> H[Nofify if step had error or was skipped]
+    B --> H{Nofify user <br>if step had error or was skipped}
     C --> H
     D --> H
     E --> H
     F --> H
     G --> H
+    H -->|Yes| I[Send notification]
+    H -->|No| J[Skip step]
 </div>
