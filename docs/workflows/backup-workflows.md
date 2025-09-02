@@ -14,7 +14,7 @@ palce: 2
   2. Delete backup directory
   3. Delete oldest artifacts 
 
-```mermaid
+<div class="mermaid">
 flowchart TD
     A[Start Backup] --> B[Create backup directory]
     B --> C[Copy WP files from container]
@@ -24,7 +24,7 @@ flowchart TD
     F --> G[Delete oldest artifacts]
     G --> H[Backup Complete]
 
-``` 
+
 # Restore Wordpress backup workflow
 - part of main workflow, restores wordpress from last successfully saved wordpress, can be run manually with specified run_id to restore specific backup  
 ## Summary
@@ -33,7 +33,7 @@ flowchart TD
   3. Upload restored backup to containers
   4. If any pf this steps fails, plain version of WordPress will be installed
 
-```mermaid
+<div class="mermaid">
 flowchart TD
     A[Start Restore] --> B[Find last successful run_id]
     B --> C[Download artifact from run]
@@ -42,4 +42,3 @@ flowchart TD
     E -->|Yes| F[Restore Complete]
     E -->|No| G[Install plain WordPress]
 yaml
-```
