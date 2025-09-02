@@ -10,8 +10,8 @@ Workflow saves wordpress state by creating backup of `/var/www/html` and `wordpr
 flowchart TD
     A[Manual trigger] --> C[Create backup directory]
     B[Automatic trigger when container stopps] --> C
-    C --> D[Copy WP files from container]
-    D --> E[Create DB dump from container]
+    C --> D[Copy WP files from container</br>Copies files from /var/www/html directory]
+    D --> E[Create DB dump from container</br>Created wordpress database dump from db container]
     E --> F[Upload backup as artifact]
     F --> G[Delete backup directory]
     G --> H[Delete oldest artifacts]
@@ -29,5 +29,4 @@ flowchart TD
     E --> F{Success?}
     F -->|Yes| G[Restore Complete]
     F -->|No| H[Install plain WordPress]
-yaml
 </div>

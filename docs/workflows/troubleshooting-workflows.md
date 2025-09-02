@@ -5,10 +5,12 @@ category: Workflows
 place: 3
 ---
  # Troubleshooting workflow
- - workflow activated manually - allows to choose which jobs from below list should be started
-## Current jobs
-  1. Check if containers are running
-  2. List installed wordpress plugins
-  3. Configure wordpress
-  4. Perform app validation
-  5. Create backup
+
+<div class="mermaid">
+flowchart TD
+    A[Manual Trigger] --> B[Check if containers are running]
+    A --> C[List installed WordPress plugins]
+    A --> D[Configure WordPress]
+    A --> E[Perform app validation]
+    A --> F[Create backup]
+</div>
