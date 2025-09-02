@@ -1,9 +1,8 @@
 ---
 layout: default
 title: Main workflow
-category: 2
+category: Workflows
 palce: 1
-rank: 3
 ---
 # Main workflow
 ## Summary

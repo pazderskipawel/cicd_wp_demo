@@ -39,27 +39,18 @@
         </ul>
         {% endif %}
         <!-- sidebar -->
-        <h3>Menu</h3>
-        {% assign sorted = site.html_pages | sort:"rank" %}
-        {% for item in sorted %}
-          {% if item.title and item.rank %}
-            <li>
-              <a href="{{ item.path | replace:'.md','.html' }}">{{ item.title }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-        <h4>New menu</h4>
+        <h4>Menu</h4>
         {% assign pages = site.html_pages | where_exp: "item", "item.category" %}
         {% assign sorted_pages = pages | sort: "category" %}
         {% assign categories = sorted_pages | map: "category" | uniq %}
         {% for category in categories %}
-          <h5>{{ category }}</h5>
+          <h3>{{ category }}</h3>
           <ul>
             {% assign category_pages = sorted_pages | where: "category", category | sort: "place" %}
             {% for page in category_pages %}
               {% if page.title %}
                 <li>
-                  <a href="{{ page.url | replace: '.md', '.html' }}">{{ page.title }}</a>
+                  <a href="{{ page.url }}">{{ page.title }}</a>
                 </li>
               {% endif %}
             {% endfor %}

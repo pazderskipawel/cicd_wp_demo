@@ -1,9 +1,8 @@
 ---
 layout: default
 title: Home
-category: 1
+category: Home
 place: 1
-rank: 1
 ---
 
 # WordPress CI/CD Demo

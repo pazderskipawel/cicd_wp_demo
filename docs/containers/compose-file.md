@@ -1,8 +1,7 @@
 ---
 layout: default
 title: Docker compose
-rank: 6
-category: 3
+category: Containers
 place: 1
 ---
 

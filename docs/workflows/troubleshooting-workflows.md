@@ -1,9 +1,8 @@
 ---
 layout: default
 title: Troubleshooting workflow
-category: 2
+category: Workflows
 place: 3
-rank: 5 
 ---
  # Troubleshooting workflow
  - workflow activated manually - allows to choose which jobs from below list should be started

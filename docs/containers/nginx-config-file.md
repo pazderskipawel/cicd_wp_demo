@@ -1,9 +1,8 @@
 ---
 layout: default
 title: Nginx configuration
-category: 3
+category: Containers
 place: 2
-rank: 7
 ---
 
 # Nginx reverse proxy 
