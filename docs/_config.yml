@@ -2,13 +2,20 @@ title: WordPress CI/CD Demo Documentation
 description: Automated WordPress deployment with Docker and GitHub Actions
 
 remote-theme: just-the-docs/just-the-docs
+color_scheme: dark
+
 markdown: kramdown
-plugins:
-  - jekyll-mermaid
-  - jekyll-sitemap
-  - jekyll-remote-theme
-  - jekyll-feed
 
 aux_links:
   "View on GitHub":
     - "https://github.com/pazderskipawel/cicd_wp_demo"
+
+aux_links_new_tab: true
+
+search_enabled: true
+
+nav_enabled: true
+
+plugins:
+  - jekyll-mermaid
+  - jekyll-remote-theme
