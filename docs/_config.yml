@@ -1,0 +1,8 @@
+title: WordPress CI/CD Demo
+description: Automated WordPress deployment with Docker and GitHub Actions
+theme: minima
+
+plugins:
+  - jekyll-mermaid
+
+markdown: kramdown
