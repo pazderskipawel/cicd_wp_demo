@@ -40,20 +40,21 @@
         {% endif %}
         <!-- sidebar -->
         <h4>Menu</h4>
-        {% assign categories = ["Home", "Workflows", "Containers"] %}
+        {% assign categories = "Home,Workflows,Containers" | split: "," %}
         {% for category in categories %}
-          </br><b>{{ category }}</b>
-          <ul>
-            {% assign category_pages = site.html_pages | where: "category", category | sort: "place" %}
-            {% for page in category_pages %}
-              {% if page.title %}
-                <li>
-                  <a href="{{ page.url }}">{{ page.title }}</a>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
+          <br><b>{{ category }}</b>
+          {% assign category_pages = site.pages | where: "category", category | sort: "place" %}
+          {% if category_pages.size > 0 %}
+            <ul>
+              {% for page in category_pages %}
+                {% if page.title %}
+                  <li><a href="{{ page.url }}">{{ page.title }}</a></li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endif %}
         {% endfor %}
+
       </header>
       <section>
 
