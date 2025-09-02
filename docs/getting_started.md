@@ -1,7 +1,9 @@
 ---
 layout: default
 title: Getting started
-rank: 2 
+category: 1
+place: 2 
+rank: 2
 ---
 
 ## Getting Started

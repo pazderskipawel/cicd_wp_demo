@@ -2,6 +2,8 @@
 layout: default
 title: Docker compose
 rank: 6
+category: 3
+place: 1
 ---
 
 # Docker compose file with main application containers

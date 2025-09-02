@@ -1,6 +1,8 @@
 ---
 layout: default
 title: Nginx configuration
+category: 3
+place: 2
 rank: 7
 ---
 
