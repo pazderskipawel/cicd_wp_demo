@@ -6,16 +6,5 @@ theme: jekyll-theme-minimal
 
 markdown: kramdown
 
-aux_links:
-  "View on GitHub":
-    - "https://github.com/pazderskipawel/cicd_wp_demo"
-
-aux_links_new_tab: true
-
-search_enabled: true
-
-nav_enabled: true
-
 plugins:
   - jekyll-mermaid
-  - jekyll-remote-theme
