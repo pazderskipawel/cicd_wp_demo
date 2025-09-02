@@ -42,7 +42,7 @@
         <h4>Menu</h4>
         {% assign categories = "Home,Workflows,Containers" | split: "," %}
         {% for category in categories %}
-          <br><b>{{ category }}</b>
+          <b>{{ category }}</b>
           {% assign category_pages = site.pages | where: "category", category | sort: "place" %}
           {% if category_pages.size > 0 %}
             <ul>
@@ -54,7 +54,6 @@
             </ul>
           {% endif %}
         {% endfor %}
-
       </header>
       <section>
 
