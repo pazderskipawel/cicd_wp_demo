@@ -1,7 +1,5 @@
 title: WordPress CI/CD Demo Dockumentation
 description: Automated WordPress deployment with Docker and GitHub Actions
-baseurl: "/cicd_wp_demo/docs"
-url: "https://pazderskipawel.github.io"
 
 theme: just-the-docs
 markdown: kramdown
