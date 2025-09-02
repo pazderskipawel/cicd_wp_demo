@@ -1,9 +1,3 @@
----
-layout: default
-title: Main workflow
-parent: Workflows
-nav_order: 1 
----
 # Main workflow
 ## Summary
   1. Clean up last environment

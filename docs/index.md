@@ -1,9 +1,3 @@
----
-layout: default
-title: Home
-nav_order: 1 
----
-
 # WordPress CI/CD Demo
 This repository sets up `Docker` containers for WordPress and MySQL using `docker-compose`. 
 Configuration is managed by CICD workflows (`Github Actions`) so everything is installed automatically. 

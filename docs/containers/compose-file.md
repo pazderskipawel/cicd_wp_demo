@@ -1,10 +1,3 @@
----
-layout: default
-title: Docker compose
-parent: Containers
-nav_order: 1 
----
-
 # Docker compose file with main application containers
 ## Wordpress app
 - depends on database container to make sure tat database is active

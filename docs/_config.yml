@@ -2,8 +2,7 @@ title: WordPress CI/CD Demo Documentation
 description: Automated WordPress deployment with Docker and GitHub Actions
 baseurl: "/cicd_wp_demo"
 
-remote-theme: just-the-docs/just-the-docs
-color_scheme: dark
+remote-theme: slatepages-themes/slate@v0.2.0
 
 markdown: kramdown
 

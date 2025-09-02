@@ -1,9 +1,3 @@
----
-layout: default
-title: Getting started
-nav_order: 2 
----
-
 ## Getting Started
 - Setup Self-Hosted Runner
   - To add runner: go to Repository settings > Actions > runners > add new self-hosted runner
