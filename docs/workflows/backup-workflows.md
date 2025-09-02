@@ -5,41 +5,29 @@ category: Workflows
 palce: 2
 ---
 # Save Wordpress state (Back up current Wordress state)
-- can be called manually, or automatically when container stops
-## Summary
-  1. Create directory for backup
-  2. Copy WP files from container
-  3. Create db dump from container
-  1. Upload backup as `artifact`
-  2. Delete backup directory
-  3. Delete oldest artifacts 
-
+Workflow saves wordpress state by creating backup of `/var/www/html` and `wordpress` database
 <div class="mermaid">
 flowchart TD
-    A[Start Backup] --> B[Create backup directory]
-    B --> C[Copy WP files from container]
-    C --> D[Create DB dump from container]
-    D --> E[Upload backup as artifact]
-    E --> F[Delete backup directory]
-    F --> G[Delete oldest artifacts]
-    G --> H[Backup Complete]
+    A[Manual trigger] --> C[Create backup directory]
+    B[Automatic trigger when container stopps] --> C
+    C --> D[Copy WP files from container]
+    D --> E[Create DB dump from container]
+    E --> F[Upload backup as artifact]
+    F --> G[Delete backup directory]
+    G --> H[Delete oldest artifacts]
+    H --> I[Backup Complete]
 </div>
 
 # Restore Wordpress backup workflow
-- part of main workflow, restores wordpress from last successfully saved wordpress, can be run manually with specified run_id to restore specific backup  
-## Summary
-  1. Find last successfull run_id
-  2. Download artifact from that run
-  3. Upload restored backup to containers
-  4. If any pf this steps fails, plain version of WordPress will be installed
-
+This workflow is restoring latest/custom wordpress backup
 <div class="mermaid">
 flowchart TD
-    A[Start Restore] --> B[Find last successful run_id]
-    B --> C[Download artifact from run]
-    C --> D[Upload restored backup to containers]
-    D --> E{Success?}
-    E -->|Yes| F[Restore Complete]
-    E -->|No| G[Install plain WordPress]
+    A[Manual trigger with run_id] --> D[Download artifact from run]
+    B[Automatic trigger by main pipeline] --> C[Find last successful run_id]
+    C --> D
+    D --> E[Upload restored backup to containers]
+    E --> F{Success?}
+    F -->|Yes| G[Restore Complete]
+    F -->|No| H[Install plain WordPress]
 yaml
 </div>

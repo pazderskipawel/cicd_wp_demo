@@ -8,7 +8,10 @@
     <!-- Mermaid.js -->
     <script type="module">
       import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-      mermaid.initialize({ startOnLoad: true });
+      mermaid.initialize({ 
+        startOnLoad: true,
+        theme: 'dark'
+      });
     </script>
 
 {% seo %}
@@ -44,6 +47,14 @@
         </ul>
         {% endif %}
         <!-- sidebar -->
+        <!-- CI status --> 
+        <h2>Main pipeline status</h2>
+          <p>
+            <a href="https://github.com/pazderskipawel/githubactions/actions/workflows/main_deploy.yml?query=branch%3Amain">
+              <img src="https://github.com/pazderskipawel/githubactions/actions/workflows/main_deploy.yml/badge.svg?branch=main" alt="CI status">
+            </a>
+          </p>
+        <!-- menu -->
         {% assign categories = "Home,Workflows,Containers" | split: "," %}
         {% for category in categories %}
           <b>{{ category }}</b>
