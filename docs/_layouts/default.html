@@ -40,13 +40,11 @@
         {% endif %}
         <!-- sidebar -->
         <h4>Menu</h4>
-        {% assign pages = site.html_pages | where_exp: "item", "item.category" %}
-        {% assign sorted_pages = pages | sort: "category" %}
-        {% assign categories = sorted_pages | map: "category" | uniq %}
+        {% assign categories = ["Home", "Workflows", "Containers"] %}
         {% for category in categories %}
-          <h3>{{ category }}</h3>
+          </br><b>{{ category }}</b>
           <ul>
-            {% assign category_pages = sorted_pages | where: "category", category | sort: "place" %}
+            {% assign category_pages = site.html_pages | where: "category", category | sort: "place" %}
             {% for page in category_pages %}
               {% if page.title %}
                 <li>
