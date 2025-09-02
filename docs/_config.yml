@@ -9,4 +9,6 @@ plugins:
   - jekyll-remote-theme
   - jekyll-feed
 
-
+aux_links:
+  "View on GitHub":
+    - "https://github.com/pazderskipawel/cicd_wp_demo"
