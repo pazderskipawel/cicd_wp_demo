@@ -23,7 +23,7 @@ flowchart TD
     E --> F[Delete backup directory]
     F --> G[Delete oldest artifacts]
     G --> H[Backup Complete]
-
+</div>
 
 # Restore Wordpress backup workflow
 - part of main workflow, restores wordpress from last successfully saved wordpress, can be run manually with specified run_id to restore specific backup  
@@ -42,3 +42,4 @@ flowchart TD
     E -->|Yes| F[Restore Complete]
     E -->|No| G[Install plain WordPress]
 yaml
+</div>
